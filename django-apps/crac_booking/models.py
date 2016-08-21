@@ -29,8 +29,8 @@ class Booking(models.Model):
     from_time = models.DateTimeField()
     to_time = models.DateTimeField()
     
-    pax_instructor = models.CharField(max_length=100, blank=True)
-    pilot_student = models.CharField(max_length=100)
+    pax = models.CharField(max_length=100, blank=True)
+    pic = models.CharField(max_length=100)
     contact_email = models.CharField(max_length=100)
     contact_phone = models.CharField(max_length=100)
     details = models.CharField(max_length=1000, blank=True)

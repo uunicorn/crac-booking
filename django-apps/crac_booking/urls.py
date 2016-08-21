@@ -36,6 +36,6 @@ router.register(r'member', MemberViewSet)
 urlpatterns = [
     url(r'api/', include(router.urls)),
     url(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    #url(r'^$', views.index, name='index'),
+    url(r'^$', views.index, name='index'),
 ]
 

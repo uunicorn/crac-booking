@@ -1,0 +1,19 @@
+{% extends "booking/base.html" %}
+
+{% load staticfiles %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
+{% endblock %}
+
+{% block contents %}
+    <h1>Oh, hi!</h1>
+{% endblock %}
+
+{% block script %}
+    <script>
+    $(document).ready(function() {
+        alert('Oh, hi!')
+    });
+    </script>
+{% endblock %}

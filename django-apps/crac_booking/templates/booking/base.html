@@ -1,0 +1,42 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html language="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="{% static "booking/jquery-ui.min.css" %}"/>
+<link rel="stylesheet" href="{% static "booking/bootstrap.min.css" %}"/>
+
+{% block style %} {% endblock %}
+
+    <script src="{% static "booking/jquery-2.2.3.js" %}"></script>
+    <script src="{% static "booking/jquery-ui.min.js" %}"></script>
+    <script src="{% static "booking/jquery.cookie.js" %}"></script>
+{% block script %} {% endblock %}
+
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="navbar navbar navbar-static-top navbar-inverse">
+            <div class="container">
+                <span>
+                    <a class='navbar-brand' rel="nofollow" href='http://crac.co.nz'>CRAC</a>
+                </span>
+                <ul class="nav navbar-nav pull-right">
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'admin:logout' %}">Logout</a>
+                    {% else %}
+                    <a href="{% url 'admin:login' %}">Login</a>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+            {% block contents %} {% endblock %}
+        </div>
+
+    </div>
+</body>
+</html>
