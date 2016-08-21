@@ -1,14 +1,19 @@
 from django.conf.urls import url, include
+from .permissions import *
 from .models import *
 from rest_framework import routers, serializers, viewsets
 
 from . import views
 
+class MyViewSet(viewsets.ModelViewSet):
+    permission_classes = (DoorCombinationPermission,)
+    
+
 class BookingSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Booking
 
-class BookingViewSet(viewsets.ModelViewSet):
+class BookingViewSet(MyViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
 
@@ -16,7 +21,7 @@ class AircraftSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Aircraft
 
-class AircraftViewSet(viewsets.ModelViewSet):
+class AircraftViewSet(MyViewSet):
     queryset = Aircraft.objects.all()
     serializer_class = AircraftSerializer
 
@@ -24,7 +29,7 @@ class MemberSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Member
 
-class MemberViewSet(viewsets.ModelViewSet):
+class MemberViewSet(MyViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
 
@@ -35,7 +40,8 @@ router.register(r'member', MemberViewSet)
 
 urlpatterns = [
     url(r'api/', include(router.urls)),
-    url(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^$', views.index, name='index'),
+    url(r'^$', views.index),
+    url(r'^door-combination', views.door_combination),
+    url(r'^reset', views.reset)
 ]
 

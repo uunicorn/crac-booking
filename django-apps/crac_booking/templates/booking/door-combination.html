@@ -1,0 +1,23 @@
+{% extends "booking/base.html" %}
+
+{% load staticfiles %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
+{% endblock %}
+
+{% block contents %}
+    <h1>Enter Door Combination</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit" />
+    </form>
+{% endblock %}
+
+{% block script %}
+    <script>
+    $(document).ready(function() {
+    });
+    </script>
+{% endblock %}
