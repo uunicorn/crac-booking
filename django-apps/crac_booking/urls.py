@@ -20,22 +20,22 @@ class AircraftViewSet(viewsets.ModelViewSet):
     queryset = Aircraft.objects.all()
     serializer_class = AircraftSerializer
 
-class MembersSerializer(serializers.HyperlinkedModelSerializer):
+class MemberSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Aircraft
+        model = Member
 
-class MembersViewSet(viewsets.ModelViewSet):
-    queryset = Members.objects.all()
-    serializer_class = MembersSerializer
+class MemberViewSet(viewsets.ModelViewSet):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
 
 router = routers.DefaultRouter()
 router.register(r'aircraft', AircraftViewSet)
-router.register(r'bookings', BookingViewSet)
-router.register(r'members', MembersViewSet)
+router.register(r'booking', BookingViewSet)
+router.register(r'member', MemberViewSet)
 
 urlpatterns = [
     url(r'api/', include(router.urls)),
     url(r'api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^$', views.index, name='index'),
+    #url(r'^$', views.index, name='index'),
 ]
 

@@ -3,15 +3,15 @@ from django.db import models
 class Aircraft(models.Model):
     rego = models.CharField(max_length=100)
     status = models.CharField(max_length=100)
-    status_reason = models.CharField(max_length=1000)
-    status_contact_name = models.CharField(max_length=100)
-    status_contact_email = models.CharField(max_length=100)
-    status_contact_phone = models.CharField(max_length=100)
-    status_from_time = models.DateTimeField()
-    status_to_time = models.DateTimeField()
+    status_reason = models.CharField(max_length=1000, blank=True)
+    status_contact_name = models.CharField(max_length=100, blank=True)
+    status_contact_email = models.CharField(max_length=100, blank=True)
+    status_contact_phone = models.CharField(max_length=100, blank=True)
+    status_from_time = models.DateTimeField(blank=True, null=True)
+    status_to_time = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
-        return rego
+        return self.rego
 
 class Member(models.Model):
     first_name = models.CharField(max_length=100)
@@ -20,7 +20,7 @@ class Member(models.Model):
     email = models.CharField(max_length=100)
 
     def __str__(self):
-        return first_name + " " + last_name
+        return self.first_name + " " + self.last_name
     
 
 class Booking(models.Model):
@@ -29,11 +29,11 @@ class Booking(models.Model):
     from_time = models.DateTimeField()
     to_time = models.DateTimeField()
     
-    pax_instructor = models.CharField(max_length=100)
+    pax_instructor = models.CharField(max_length=100, blank=True)
     pilot_student = models.CharField(max_length=100)
     contact_email = models.CharField(max_length=100)
     contact_phone = models.CharField(max_length=100)
-    details = models.CharField(max_length=1000)
+    details = models.CharField(max_length=1000, blank=True)
 
     def __str__(self):
         return "%s: %s..%s" % (self.pilot_student, str(self.from_time), str(self.to_time))
