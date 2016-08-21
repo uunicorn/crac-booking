@@ -36,5 +36,5 @@ class Booking(models.Model):
     details = models.CharField(max_length=1000, blank=True)
 
     def __str__(self):
-        return "%s: %s..%s" % (self.pilot_student, str(self.from_time), str(self.to_time))
+        return "%s: %s..%s" % (self.pic, str(self.from_time), str(self.to_time))
 
