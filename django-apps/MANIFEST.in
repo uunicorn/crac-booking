@@ -1,0 +1,3 @@
+recursive-include crac_booking/static *
+recursive-include crac_booking/templates *
+
