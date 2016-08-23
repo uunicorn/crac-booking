@@ -1,1 +1,12 @@
 
+.booked {
+    background-color: #cfc;
+}
+
+.time {
+    font-weight: bold;
+}
+
+.pic span, .pax span {
+    margin-left: 1em;
+}
