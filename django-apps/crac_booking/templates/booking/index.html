@@ -8,12 +8,135 @@
 
 {% block contents %}
     <h1>Oh, hi!</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>JOR</th>
+          <th colspan="2">Pilot / Passenger</th>
+        </tr>
+      </thead>
+      <tbody class="js-table-content">
+
+      </tbody>
+    </table>
+
 {% endblock %}
 
 {% block script %}
     <script>
+    var daylight_table = [
+      { start: 1, dawn: 410, dusk: 1090},
+      { start: 200, dawn: 349, dusk: 977},
+      { start: 300, dawn: 470, dusk: 1150}
+    ];
+
+    function getDaylightHours(moment) {
+      var days = moment.dayOfYear();
+      for (var i = daylight_table.length - 1; i >= 0; i--) {
+        if (days >= daylight_table[i].start) {
+          return daylight_table[i];
+        }
+      }
+      throw "Invalid daylight table";
+    }
+
+    function init(today) {
+      $.when(
+        $.get('/booking/api/booking/'),
+        $.get('/booking/api/aircraft/'),
+        $.get('/booking/api/member/')
+      ).done(function(bookings, aircrafts, members) {
+        bookings = bookings[0];
+        aircrafts = aircrafts[0];
+        members = members[0];
+
+        render(today, bookings);
+
+      }).fail(function(e, err, params) {
+        alert('oops: ' + err);
+      });
+    }
+
+    function addEmptyLine(tbody, time) {
+      $('<tr/>')
+        .addClass('free')
+        .append(
+          $('<td/>').text(time.format("HH:mm"))
+        )
+        .append(
+          $('<td colspan="2"/>')
+        )
+        .appendTo(tbody);
+
+    }
+
+    function addBookingLine(tbody, time) {
+      $('<tr/>')
+        .addClass('booked')
+        .append(
+          $('<td/>').text(time.format("HH:mm"))
+        )
+        .append(
+          $('<td colspan="2"/>').text('******')
+        )
+        .appendTo(tbody);
+    }
+
+    function addBookingHeader(tbody, time, booking) {
+      $('<tr/>')
+        .addClass('booked')
+        .append(
+          $('<td/>').text(time.format("HH:mm"))
+        )
+        .append(
+          $('<td/>').text(booking.pic)
+        )
+        .append(
+          $('<td/>').text(booking.pax)
+        )
+        .appendTo(tbody);
+    }
+
+
+    function render(today, bookings) {
+        var daylight = getDaylightHours(today);
+        var tbody = $('.js-table-content');
+        var b = 0;
+
+
+        for (var m = 0; m < 24*60; m+=10) {
+            if (m >= daylight.dawn && m <= daylight.dusk) {
+              var time = today.clone().add(m, 'minutes');
+
+              if (b < bookings.length) {
+                console.log('from_time', moment(bookings[b].from_time));
+                console.log('now time', time);
+
+                if (moment(bookings[b].from_time).isSame(time)) {
+                  addBookingHeader(tbody, time, bookings[b]);
+
+                  for (m+=10; m <= daylight.dusk; m+=10) {
+                      time = today.clone().add(m, 'minutes');
+                      addBookingLine(tbody, time);
+                      if (moment(bookings[b].to_time).isSame(time)) {
+                        break;
+                      }
+                  }
+                  b++;
+                  continue;
+                }
+              }
+
+              addEmptyLine(tbody, time);
+            }
+        }
+    }
+
     $(document).ready(function() {
-        alert('Oh, hi!')
+        var today = moment('2016/08/21', 'YYYY/MM/DD'); // XXX
+        init(today);
     });
+
+
     </script>
 {% endblock %}
