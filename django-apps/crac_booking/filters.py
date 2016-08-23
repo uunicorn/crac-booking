@@ -19,7 +19,8 @@ class IsoFilter(django_filters.DateTimeFilter):
 class BookingFilter(filters.FilterSet):
     from_time = IsoFilter(name='from_time', lookup_expr='gte')
     to_time = IsoFilter(name='to_time', lookup_expr='lte')
+    aircraft = django_filters.CharFilter(name='aircraft__rego')
 
     class Meta:
         model = Booking
-        fields = ['from_time', 'to_time']
+        fields = ['from_time', 'to_time', 'aircraft']

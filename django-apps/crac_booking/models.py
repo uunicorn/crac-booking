@@ -35,6 +35,9 @@ class Booking(models.Model):
     contact_phone = models.CharField(max_length=100)
     details = models.CharField(max_length=1000, blank=True)
 
+    class Meta:
+        ordering = ('from_time',)
+
     def __str__(self):
         return "%s: %s..%s" % (self.pic, str(self.from_time), str(self.to_time))
 

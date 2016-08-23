@@ -1,7 +1,8 @@
 from django.conf.urls import url, include
 from .permissions import *
 from .models import *
-from rest_framework import routers, serializers, viewsets
+from .filters import BookingFilter
+from rest_framework import routers, serializers, viewsets, filters
 
 from . import views
 
@@ -15,6 +16,9 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
 
 class BookingViewSet(MyViewSet):
     queryset = Booking.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,filters.OrderingFilter)
+    filter_class = BookingFilter
+    ordering_fields = ('from_time',)
     serializer_class = BookingSerializer
 
 class AircraftSerializer(serializers.HyperlinkedModelSerializer):
