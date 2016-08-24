@@ -1,4 +1,11 @@
 
+var today, // midnight of today (moment)
+    selectionStart, // first row clicked, inclusive (moment)
+    selectionEnd, // last row clicked, inclusive (moment)
+    bookings, // list of bookings
+    aircrafts, // list of aircrafts
+    members; // list of members
+
 var daylight_table = [
     { start: 1, dawn: 410, dusk: 1090},
     { start: 200, dawn: 349, dusk: 977},
@@ -15,53 +22,48 @@ function getDaylightHours(moment) {
     throw "Invalid daylight table";
 }
 
-function init(today) {
+function init(t) {
+    today = t;
+
     $.when(
         $.get('/booking/api/booking/'),
         $.get('/booking/api/aircraft/'),
         $.get('/booking/api/member/')
-    ).done(function(bookings, aircrafts, members) {
-        bookings = bookings[0];
-        aircrafts = aircrafts[0];
-        members = members[0];
+    ).done(function(bookingsrc, aircraftsrc, membersrc) {
+        bookings = bookingsrc[0];
+        aircrafts = aircraftsrc[0];
+        members = membersrc[0];
 
-        render(today, bookings);
+        render();
+
+        for(var i=0;i<bookings.length;i++) {
+            $('.booking-line').trigger('add-booking', [bookings[i]]);
+        }
 
     }).fail(function(e, err, params) {
         alert('oops: ' + err);
     });
 }
 
-function timeSpan(time) {
-    return $('<span/>')
+function timeDiv(time) {
+    return $('<div/>')
         .addClass('time')
-        .addClass('col-md-4')
+        .addClass('col-md-1')
         .text(time.format("HH:mm"));
 }
 
-function baseLine(time) {
-    return $('<a href="javascript:void(0)">')
-        .addClass('row')
-        .addClass('list-group-item')
-        .addClass('list-group-item-action')
-        .append(timeSpan(time));
+function addNewDiv() {
+    return $('<div class="add-new-ops"/>')
+        .text('Adding new booking')
+        .append($('<div/>')
+            .addClass('pull-right')
+            .append($('<div class="btn">Add</div>'))
+            .append($('<div class="btn">Cancel</div>'))
+        );
 }
 
-function emptyLine(time) {
-    return baseLine(time)
-        .addClass('free')
-        .click(function() {
-            alert('>>> ' + time.format('HH:mm'));
-        });
-}
-
-function bookingLine(time) {
-    return baseLine(time).addClass('booked');
-}
-
-function bookingHeader(time, booking) {
-    return baseLine(time)
-        .addClass('booked')
+function existingBookingHeaderDiv(booking) {
+    return $('<div>')
         .append(
             $('<div/>')
                 .addClass('pic')
@@ -78,36 +80,106 @@ function bookingHeader(time, booking) {
         );
 }
 
+function baseLine(time) {
+    var header = false, 
+        selection = false,
+        rowrange = moment.range(time, time.clone().add(10, 'm')),
 
-function render(today, bookings) {
-        var daylight = getDaylightHours(today);
-        var tbody = $('.js-table-content');
-        var b = 0;
+        div = $('<div>')
+        .addClass('booking-line')
+        .addClass('row')
+        .addClass('list-group-item')
+        .addClass('list-group-item-action')
+        .append(timeDiv(time))
+        .append('<div class="contents">');
 
-
-        for (var m = 0; m < 24*60; m+=10) {
-                if (m >= daylight.dawn && m <= daylight.dusk) {
-                    var time = today.clone().add(m, 'minutes');
-
-                    if (b < bookings.length) {
-                        if (moment(bookings[b].from_time).isSame(time)) {
-                            tbody.append(bookingHeader(time, bookings[b]));
-
-                            for (m+=10; m <= daylight.dusk; m+=10) {
-                                    time = today.clone().add(m, 'minutes');
-                                    tbody.append(bookingLine(time));
-                                    if (moment(bookings[b].to_time).isSame(time)) {
-                                        break;
-                                    }
-                            }
-                            b++;
-                            continue;
-                        }
-                    }
-
-                    tbody.append(emptyLine(time));
-                }
+    div.bind('selection-changed', function(e, params) {
+        if(div.hasClass('booked')) {
+            return;
         }
+
+        var min = selectionStart.isBefore(selectionEnd) ? selectionStart : selectionEnd;
+        var max = selectionStart.isBefore(selectionEnd) ? selectionEnd : selectionStart;
+        var selectedrange = moment.range(min, max.clone().add(10, 'm'));
+
+        if(time.isSame(min)) {
+            if(!header) {
+                div.find('.contents').html(addNewDiv())
+                header = true;
+            }
+        } else {
+            if(header) {
+                div.find('.contents').empty();
+                header = false;
+            }
+        }
+
+        if(rowrange.overlaps(selectedrange)) {
+            if(!selection) {
+                div.addClass('selection');
+                selection = true;
+            }
+        } else {
+            if(selection) {
+                div.removeClass('selection');
+                selection = false;
+            }
+        }
+    });
+
+    div.bind('add-booking', function(e, params) {
+        var booking = params,
+            min = moment(booking.from_time),
+            max = moment(booking.to_time),
+            bookingrange = moment.range(min, max);
+
+        if(time.isSame(min)) {
+            div.find('.contents').html(existingBookingHeaderDiv(booking));
+        }
+
+        if(rowrange.overlaps(bookingrange)) {
+            div.addClass('booked');
+        }
+    });
+
+    div.click(function() {
+        if(div.hasClass('booked')) {
+            return;
+        }
+
+        if(header) {
+            return;
+        }
+
+        select(time);
+    });
+
+    return div;
+}
+
+function select(time) {
+    if(selectionStart == null) {
+        selectionStart = time;
+        selectionEnd = time;
+    } else {
+        selectionEnd = time;
+    }
+    $('.booking-line').trigger('selection-changed', [selectionStart, selectionEnd])
+}
+
+function render() {
+    var daylight = getDaylightHours(today);
+    var listdiv = $('.js-table-content');
+    var b = 0;
+
+    listdiv.empty();
+
+    for (var m = 0; m < 24*60; m+=10) {
+        if (m >= daylight.dawn && m <= daylight.dusk) {
+            var time = today.clone().add(m, 'minutes');
+            listdiv.append(baseLine(time));
+        }
+    }
 }
 
 $(document).ready(function() {

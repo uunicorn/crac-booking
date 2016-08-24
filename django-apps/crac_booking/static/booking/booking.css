@@ -3,6 +3,10 @@
     background-color: #cfc;
 }
 
+.selection {
+    background-color: #ccf;
+}
+
 .time {
     font-weight: bold;
 }
