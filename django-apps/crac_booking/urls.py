@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'api/', include(router.urls)),
     url(r'^$', views.index),
     url(r'^door-combination', views.door_combination),
-    url(r'^reset', views.reset)
+    url(r'^reset', views.reset),
+    url(r'^popup', views.popup)
 ]
 

@@ -32,3 +32,7 @@ def door_combination(request):
 def reset(request):
     del request.session['door-combination']
     return HttpResponseRedirect('/booking/door-combination/')
+
+def popup(request):
+    context = {  }
+    return render(request, 'booking/popup.html', context)
