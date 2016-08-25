@@ -1,11 +1,9 @@
 
-var today, // midnight of today (moment)
+var aircraft = 'RGA', // XXX
     step = moment.duration(10, 'minutes'),
     selectionStart, // first row clicked, inclusive (moment)
     selectionEnd, // last row clicked, inclusive (moment)
-    bookings, // list of bookings
-    aircrafts, // list of aircrafts
-    members; // list of members
+    bookings; // list of bookings
 
 var daylight_table = [
     { start: 1, dawn: '6:50', dusk: '18:10'},
@@ -23,25 +21,6 @@ function getDaylightHours(moment) {
     throw "Invalid daylight table";
 }
 
-function init(t) {
-    today = t;
-
-    $.when(
-        $.get('/booking/api/booking/'),
-        $.get('/booking/api/aircraft/'),
-        $.get('/booking/api/member/')
-    ).done(function(bookingsrc, aircraftsrc, membersrc) {
-        bookings = bookingsrc[0];
-        aircrafts = aircraftsrc[0];
-        members = membersrc[0];
-
-        for(var i=0;i<bookings.length;i++) {
-            $('.booking-line').trigger('add-booking', [bookings[i]]);
-        }
-    }).fail(function(e, err, params) {
-        alert('oops: ' + err);
-    });
-}
 
 function timeDiv(time) {
     return $('<div/>')
@@ -185,13 +164,17 @@ function baseLine(time) {
     return div;
 }
 
-function render() {
+function render(today) {
     var start = today.clone().startOf('day'),
         end = start.clone().add(1, 'day'),
         daylight = getDaylightHours(today),
         dawn = start.clone().add(moment.duration(daylight.dawn)),
         dusk = start.clone().add(moment.duration(daylight.dusk)),
         listdiv = $('.js-table-content');
+
+    $('.today').text(start.format('YYYY-MM-DD'));
+
+    listdiv.empty();
 
     moment.range(start, end).by(step, function(time) {
         if(time.isBefore(dawn) || time.isAfter(dusk)) {
@@ -200,10 +183,34 @@ function render() {
 
         listdiv.append(baseLine(time));
     });
+
+    $.get('/booking/api/booking/', { 
+        from_time: start.format(), 
+        to_time: end.format(), 
+        aircratf: aircraft 
+    })
+    .done(function(bookings) {
+        for(var i=0;i<bookings.length;i++) {
+            $('.booking-line').trigger('add-booking', [bookings[i]]);
+        }
+    })
+    .fail(function(e, err, params) {
+        alert('oops: ' + err);
+    });
 }
 
 $(document).ready(function() {
-    today = moment('2016/08/21', 'YYYY/MM/DD'); // XXX
-    render();
-    init(today);
+    var today = moment();
+    
+    $('.prev-day').click(function() {
+        today.subtract(1, 'day');
+        render(today);
+    });
+
+    $('.next-day').click(function() {
+        today.add(1, 'day');
+        render(today);
+    });
+
+    render(today);
 });
