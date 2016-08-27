@@ -30,8 +30,21 @@ function timeDiv(time) {
 }
 
 function addBooking(e) {
+    var min = selectionStart, 
+        max = selectionEnd,
+        tmp;
+
     e.stopPropagation();
-    alert(selectionStart.format('HH:mm') + '..' + selectionEnd.format('HH:mm'));
+
+    if(max.isBefore(min)) {
+        tmp = min;
+        min = max;
+        max = tmp;
+    }
+
+    
+    $('#add-form-content').modal('show');
+    //alert(selectionStart.format('HH:mm') + '..' + selectionEnd.format('HH:mm'));
 }
 
 function cancelSelection(e) {
@@ -41,7 +54,6 @@ function cancelSelection(e) {
 }
 
 function select(time) {
-    console.log('select');
     if(selectionStart == null) {
         selectionStart = selectionEnd = time;
     } else {
@@ -172,7 +184,9 @@ function render(today) {
         dusk = start.clone().add(moment.duration(daylight.dusk)),
         listdiv = $('.js-table-content');
 
-    $('.today').text(start.format('YYYY-MM-DD'));
+    $('.today').val(start.format('DD/MM/YYYY'));
+
+    selectionStart = selectionEnd = null;
 
     listdiv.empty();
 
@@ -201,6 +215,15 @@ function render(today) {
 
 $(document).ready(function() {
     var today = moment();
+
+    $('.today').datepicker({
+        format: 'dd/mm/yyyy'
+    });
+
+    $('.today').change(function() {
+        today = moment($('.today').val(), 'DD/MM/YYYY');
+        render(today);
+    });
     
     $('.prev-day').click(function() {
         today.subtract(1, 'day');

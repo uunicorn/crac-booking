@@ -4,6 +4,7 @@
 
 {% block style %}
 <link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
+<link rel="stylesheet" href="{% static "booking/bootstrap-datepicker.min.css" %}"/>
 {% endblock %}
 
 {% block contents %}
@@ -12,22 +13,87 @@
         <div class="btn next-day pull-right">Next day</div>
     </div>
     <div class="row">
-        <div class="col-md-2 col-md-offset-5 today">Today</div>
+        <div class="col-lg-1 col-centered"><input class="today"></input></div>
     </div>
     <div class="js-table-content list-group"></div>
     <div class="row">
-        <div class="col-md-2 col-md-offset-5 today">Today</div>
+        <div class="col-lg-1 col-centered"><input class="today"></input></div>
     </div>
     <div class="row">
         <div class="btn prev-day">Previous day</div>
         <div class="btn next-day pull-right">Next day</div>
     </div>
 
+    <div id="add-form-content" class="modal fade" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Booking details</h3>
+                </div>
+                <div class="modal-body">
+                    <form class="booking-form" name="booking-form">
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="aircraft">Aircraft</label>
+                            <div class="col-lg-8">
+                                <input type="text" name="aircratf" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="from-time">From time</label>
+                            <div class="col-lg-8">
+                                <input type="text" name="from-time" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="to-time">To time</label>
+                            <div class="col-lg-8">
+                                <input type="text" name="to-time" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="pic">PiC</label>
+                            <div class="col-lg-8">
+                                <input type="text" name="pic" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="pax">Pax/Instructor</label>
+                            <div class="col-lg-8">
+                                <input type="text" name="pax" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="email">Your E-mail</label>
+                            <div class="col-lg-8">
+                                <input type="email" name="email" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-lg-4 control-label" for="phone">Phone</label>
+                            <div class="col-lg-8">
+                                <input type="text" name="phone" class="control-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="details">Details of the flight</label><br>
+                            <textarea name="details" class="input-xlarge"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-success" type="submit" value="Save" id="submit">
+                    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
     <script src="{% static "booking/moment.min.js" %}"></script>
     <script src="{% static "booking/moment-range.min.js" %}"></script>
+    <script src="{% static "booking/bootstrap-datepicker.min.js" %}"></script>
     <script src="{% static "booking/booking.js" %}"></script>
     
 {% endblock %}
