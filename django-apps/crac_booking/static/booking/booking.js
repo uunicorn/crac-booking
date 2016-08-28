@@ -42,9 +42,46 @@ function addBooking(e) {
         max = tmp;
     }
 
+    max = max.clone().add(step);
+
     
+    $('#add-form-content #aircraft').val(aircraft);
+    $('#add-form-content #from-time').val(min.format('HH:mm'));
+    $('#add-form-content #to-time').val(max.format('HH:mm'));
+    $('#add-form-content #submit').click(function() {
+        var date = min.format('DD/MM/YYYY'),
+            from = moment(date + ' ' + $('#add-form-content #from-time').val(), 'DD/MM/YYYY HH:mm'),
+            to = moment(date + ' ' + $('#add-form-content #to-time').val(), 'DD/MM/YYYY HH:mm');
+
+        $.ajax({
+            url: '/booking/api/booking/',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                "from_time": from.utc().format(),
+                "to_time": to.utc().format(),
+                "pax": $('#add-form-content #pax').val(),
+                "pic": $('#add-form-content #pic').val(),
+                "contact_email": $('#add-form-content #email').val(),
+                "contact_phone": $('#add-form-content #phone').val(),
+                "details": $('#add-form-content #details').val(),
+                "aircraft":"http://localhost:8000/booking/api/aircraft/1/" // FIXME
+            }),
+            beforeSend: function(xhr){
+                xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+            }
+        })
+        .done(function(booking) {
+            selectionStart = selectionEnd = null;
+            $('.booking-line').trigger('selection-changed');
+            $('.booking-line').trigger('add-booking', [booking]);
+            $('#add-form-content').modal('hide');
+        })
+        .fail(function(e, err, params) {
+            alert('oops: ' + err);
+        });
+    });
     $('#add-form-content').modal('show');
-    //alert(selectionStart.format('HH:mm') + '..' + selectionEnd.format('HH:mm'));
 }
 
 function cancelSelection(e) {
