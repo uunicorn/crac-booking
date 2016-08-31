@@ -1,5 +1,5 @@
 
-var aircraft = 'RGA', // XXX
+var aircrafts,
     step = moment.duration(10, 'minutes'),
     selectionStart, // first row clicked, inclusive (moment)
     selectionEnd, // last row clicked, inclusive (moment)
@@ -45,7 +45,7 @@ function addBooking(e) {
     max = max.clone().add(step);
 
     
-    $('#add-form-content #aircraft').val(aircraft);
+    $('#add-form-content #aircraft').val($('#for-ac').val());
     $('#add-form-content #from-time').val(min.format('HH:mm'));
     $('#add-form-content #to-time').val(max.format('HH:mm'));
     $('#add-form-content #submit').click(function() {
@@ -65,7 +65,7 @@ function addBooking(e) {
                 "contact_email": $('#add-form-content #email').val(),
                 "contact_phone": $('#add-form-content #phone').val(),
                 "details": $('#add-form-content #details').val(),
-                "aircraft":"http://localhost:8000/en/booking/api/aircraft/1/" // FIXME
+                "aircraft": aircrafts[$('#add-form-content #aircraft').val()].url
             }),
             beforeSend: function(xhr){
                 xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
@@ -213,15 +213,19 @@ function baseLine(time) {
     return div;
 }
 
-function render(today) {
-    var start = today.clone().startOf('day'),
+function getToday() {
+    return moment($('.today').val(), 'DD/MM/YYYY');
+}
+
+function render() {
+    var today = getToday(),
+        aircraft = $('#for-ac').val(),
+        start = today.clone().startOf('day'),
         end = start.clone().add(1, 'day'),
         daylight = getDaylightHours(today),
         dawn = start.clone().add(moment.duration(daylight.dawn)),
         dusk = start.clone().add(moment.duration(daylight.dusk)),
         listdiv = $('.js-table-content');
-
-    $('.today').val(start.format('DD/MM/YYYY'));
 
     selectionStart = selectionEnd = null;
 
@@ -238,7 +242,7 @@ function render(today) {
     $.get('api/booking/', { 
         from_time: start.format(), 
         to_time: end.format(), 
-        aircratf: aircraft 
+        aircraft: aircraft 
     })
     .done(function(bookings) {
         for(var i=0;i<bookings.length;i++) {
@@ -250,27 +254,55 @@ function render(today) {
     });
 }
 
-$(document).ready(function() {
-    var today = moment();
-
+function init() {
     $('.today').datepicker({
         format: 'dd/mm/yyyy'
     });
 
     $('.today').change(function() {
-        today = moment($('.today').val(), 'DD/MM/YYYY');
-        render(today);
+        render();
+    });
+    
+    $('#for-ac').change(function() {
+        render();
     });
     
     $('.prev-day').click(function() {
+        var today = getToday();
         today.subtract(1, 'day');
-        render(today);
+        $('.today').val(today.format('DD/MM/YYYY'));
+        render();
     });
 
     $('.next-day').click(function() {
+        var today = getToday();
         today.add(1, 'day');
-        render(today);
+        $('.today').val(today.format('DD/MM/YYYY'));
+        render();
     });
 
-    render(today);
+    $('.today').val(moment().format('DD/MM/YYYY'));
+
+    render();
+}
+
+$(document).ready(function() {
+    $.get('api/aircraft/')
+    .done(function(acs) {
+        aircrafts = {};
+
+        $('#for-ac').empty();
+        $('#add-form-content #aircraft').empty();
+
+        for(var i = 0;i<acs.length;i++) {
+            aircrafts[acs[i].rego] = acs[i];
+            $('#for-ac').append($('<option>').text(acs[i].rego));
+            $('#add-form-content #aircraft').append($('<option>').text(acs[i].rego));
+        }
+
+        init();
+    })
+    .fail(function(e, err, params) {
+        alert('oops: ' + err);
+    });
 });
