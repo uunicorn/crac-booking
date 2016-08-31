@@ -5,7 +5,7 @@ var aircraft = 'RGA', // XXX
     selectionEnd, // last row clicked, inclusive (moment)
     bookings; // list of bookings
 
-var daylight_table = [
+var daylight_table = [ // XXX
     { start: 1, dawn: '6:50', dusk: '18:10'},
     { start: 200, dawn: '5:49', dusk: '16:17'},
     { start: 300, dawn: '12:20', dusk: '19:10'}
@@ -54,7 +54,7 @@ function addBooking(e) {
             to = moment(date + ' ' + $('#add-form-content #to-time').val(), 'DD/MM/YYYY HH:mm');
 
         $.ajax({
-            url: '/booking/api/booking/',
+            url: 'api/booking/',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
@@ -65,7 +65,7 @@ function addBooking(e) {
                 "contact_email": $('#add-form-content #email').val(),
                 "contact_phone": $('#add-form-content #phone').val(),
                 "details": $('#add-form-content #details').val(),
-                "aircraft":"http://localhost:8000/booking/api/aircraft/1/" // FIXME
+                "aircraft":"http://localhost:8000/en/booking/api/aircraft/1/" // FIXME
             }),
             beforeSend: function(xhr){
                 xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
@@ -235,7 +235,7 @@ function render(today) {
         listdiv.append(baseLine(time));
     });
 
-    $.get('/booking/api/booking/', { 
+    $.get('api/booking/', { 
         from_time: start.format(), 
         to_time: end.format(), 
         aircratf: aircraft 
