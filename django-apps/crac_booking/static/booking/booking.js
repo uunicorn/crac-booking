@@ -1,5 +1,6 @@
 
-var aircrafts,
+var aircraftsByRego,
+    aircraftsByUrl,
     step = moment.duration(10, 'minutes'),
     selectionStart, // first row clicked, inclusive (moment)
     selectionEnd, // last row clicked, inclusive (moment)
@@ -29,6 +30,96 @@ function timeDiv(time) {
         .text(time.format('HH:mm'));
 }
 
+function editBooking(booking) {
+    $('#add-form-content #url').val(booking.url);
+    $('#add-form-content #date').val(moment(booking.from_time).format('DD/MM/YYYY'));
+    $('#add-form-content #from-time').val(moment(booking.from_time).format('HH:mm'));
+    $('#add-form-content #to-time').val(moment(booking.to_time).format('HH:mm'));
+    $('#add-form-content #pax').val(booking.pax);
+    $('#add-form-content #pic').val(booking.pic);
+    $('#add-form-content #email').val(booking.contact_email);
+    $('#add-form-content #phone').val(booking.contact_phone);
+    $('#add-form-content #details').val(booking.details);
+    $('#add-form-content #aircraft').val(aircraftsByUrl[booking.aircraft].rego);
+    if(booking.url) {
+        $('#add-form-content #submit').val('Save');
+        $('#add-form-content #delete').show();
+    } else {
+        $('#add-form-content #submit').val('Add');
+        $('#add-form-content #delete').hide();
+    }
+    $('#add-form-content').modal('show');
+}
+
+function initBookingForm() {
+    $('#add-form-content #delete').click(function() {
+        var url = $('#add-form-content #url').val();
+
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            beforeSend: function(xhr){
+                xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+            }
+        })
+        .done(function(booking) {
+            $('.booking-line').trigger('del-booking', [url]);
+            $('#add-form-content').modal('hide');
+        })
+        .fail(function(e, err, params) {
+            alert('oops: ' + err);
+        });
+    });
+
+    $('#add-form-content #submit').click(function() {
+        var url = $('#add-form-content #url').val(),
+            date = $('#add-form-content #date').val(),
+            from = moment(date + ' ' + $('#add-form-content #from-time').val(), 'DD/MM/YYYY HH:mm'),
+            to = moment(date + ' ' + $('#add-form-content #to-time').val(), 'DD/MM/YYYY HH:mm'),
+            request = {
+                "url": url,
+                "from_time": from.utc().format(),
+                "to_time": to.utc().format(),
+                "pax": $('#add-form-content #pax').val(),
+                "pic": $('#add-form-content #pic').val(),
+                "contact_email": $('#add-form-content #email').val(),
+                "contact_phone": $('#add-form-content #phone').val(),
+                "details": $('#add-form-content #details').val(),
+                "aircraft": aircraftsByRego[$('#add-form-content #aircraft').val()].url
+            };
+
+        $.ajax({
+            url: url ? url : 'api/booking/',
+            type: url ? 'PUT' : 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(request),
+            beforeSend: function(xhr){
+                xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+            }
+        })
+        .done(function(booking) {
+            var currentAcUrl = aircraftsByRego[$('#for-ac').val()].url;
+
+            if(url) {
+                $('.booking-line').trigger('del-booking', [url]);
+                if(request.aircraft === currentAcUrl) {
+                    $('.booking-line').trigger('add-booking', [request]);
+                }
+            } else {
+                selectionStart = selectionEnd = null;
+                $('.booking-line').trigger('selection-changed');
+                if(booking.aircraft === currentAcUrl) {
+                    $('.booking-line').trigger('add-booking', [booking]);
+                }
+            }
+            $('#add-form-content').modal('hide');
+        })
+        .fail(function(e, err, params) {
+            alert('oops: ' + err);
+        });
+    });
+}
+
 function addBooking(e) {
     var min = selectionStart, 
         max = selectionEnd,
@@ -44,44 +135,17 @@ function addBooking(e) {
 
     max = max.clone().add(step);
 
-    
-    $('#add-form-content #aircraft').val($('#for-ac').val());
-    $('#add-form-content #from-time').val(min.format('HH:mm'));
-    $('#add-form-content #to-time').val(max.format('HH:mm'));
-    $('#add-form-content #submit').click(function() {
-        var date = min.format('DD/MM/YYYY'),
-            from = moment(date + ' ' + $('#add-form-content #from-time').val(), 'DD/MM/YYYY HH:mm'),
-            to = moment(date + ' ' + $('#add-form-content #to-time').val(), 'DD/MM/YYYY HH:mm');
-
-        $.ajax({
-            url: 'api/booking/',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({
-                "from_time": from.utc().format(),
-                "to_time": to.utc().format(),
-                "pax": $('#add-form-content #pax').val(),
-                "pic": $('#add-form-content #pic').val(),
-                "contact_email": $('#add-form-content #email').val(),
-                "contact_phone": $('#add-form-content #phone').val(),
-                "details": $('#add-form-content #details').val(),
-                "aircraft": aircrafts[$('#add-form-content #aircraft').val()].url
-            }),
-            beforeSend: function(xhr){
-                xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
-            }
-        })
-        .done(function(booking) {
-            selectionStart = selectionEnd = null;
-            $('.booking-line').trigger('selection-changed');
-            $('.booking-line').trigger('add-booking', [booking]);
-            $('#add-form-content').modal('hide');
-        })
-        .fail(function(e, err, params) {
-            alert('oops: ' + err);
-        });
+    editBooking({
+        "from_time": min.utc().format(),
+        "to_time": max.utc().format(),
+        "pax": '',
+        "pic": '',
+        "contact_email": '',
+        "contact_phone": '',
+        "details": '',
+        "aircraft": aircraftsByRego[$('#add-form-content #aircraft').val()].url
     });
-    $('#add-form-content').modal('show');
+
 }
 
 function cancelSelection(e) {
@@ -126,7 +190,8 @@ function existingBookingHeaderDiv(booking) {
 }
 
 function baseLine(time) {
-    var header = false, 
+    var booking,
+        header = false, 
         selection = false,
         rowrange = moment.range(time, time.clone().add(step)),
 
@@ -144,7 +209,7 @@ function baseLine(time) {
             selectedrange,
             tmp;
 
-        if(div.hasClass('booked')) {
+        if(booking) {
             return;
         }
 
@@ -184,22 +249,32 @@ function baseLine(time) {
     });
 
     div.bind('add-booking', function(e, params) {
-        var booking = params,
-            min = moment(booking.from_time),
-            max = moment(booking.to_time),
+        var min = moment(params.from_time),
+            max = moment(params.to_time),
             bookingrange = moment.range(min, max);
 
-        if(time.isSame(min)) {
-            div.find('.contents').html(existingBookingHeaderDiv(booking));
-        }
-
         if(rowrange.overlaps(bookingrange)) {
+            booking = params;
+
             div.addClass('booked');
+
+            if(time.isSame(min)) {
+                div.find('.contents').html(existingBookingHeaderDiv(booking));
+            }
+        }
+    });
+
+    div.bind('del-booking', function(e, params) {
+        if(booking && booking.url === params) {
+            div.find('.contents').empty();
+            booking = null;
+            div.removeClass('booked');
         }
     });
 
     div.click(function() {
-        if(div.hasClass('booked')) {
+        if(booking) {
+            editBooking(booking);
             return;
         }
 
@@ -284,18 +359,21 @@ function init() {
     $('.today').val(moment().format('DD/MM/YYYY'));
 
     render();
+    initBookingForm();
 }
 
 $(document).ready(function() {
     $.get('api/aircraft/')
     .done(function(acs) {
-        aircrafts = {};
+        aircraftsByRego = {};
+        aircraftsByUrl = {};
 
         $('#for-ac').empty();
         $('#add-form-content #aircraft').empty();
 
         for(var i = 0;i<acs.length;i++) {
-            aircrafts[acs[i].rego] = acs[i];
+            aircraftsByRego[acs[i].rego] = acs[i];
+            aircraftsByUrl[acs[i].url] = acs[i];
             $('#for-ac').append($('<option>').text(acs[i].rego));
             $('#add-form-content #aircraft').append($('<option>').text(acs[i].rego));
         }
