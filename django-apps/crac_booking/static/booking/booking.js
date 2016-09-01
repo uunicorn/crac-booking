@@ -143,7 +143,7 @@ function addBooking(e) {
         "contact_email": '',
         "contact_phone": '',
         "details": '',
-        "aircraft": aircraftsByRego[$('#add-form-content #aircraft').val()].url
+        "aircraft": aircraftsByRego[$('#for-ac').val()].url
     });
 
 }

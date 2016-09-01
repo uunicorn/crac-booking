@@ -1,9 +1,10 @@
+from django.core.exceptions import ValidationError
 from django.conf.urls import url, include
+from django.db.models import Q
 from .permissions import *
 from .models import *
 from .filters import BookingFilter
 from rest_framework import routers, serializers, viewsets, filters
-
 from . import views
 
 class MyViewSet(viewsets.ModelViewSet):
@@ -11,6 +12,28 @@ class MyViewSet(viewsets.ModelViewSet):
     
 
 class BookingSerializer(serializers.HyperlinkedModelSerializer):
+    def validate(self, data):
+        print repr(data)
+
+        q = (Q(from_time__gte=data['from_time'], from_time__lt=data['to_time']) | 
+            Q(to_time__gt=data['from_time'], to_time__lte=data['to_time']))
+
+        q = q & Q(aircraft=data['aircraft'])
+
+        if self.instance:
+            q = ~Q(pk=self.instance.pk) & q
+
+        print '>>>> %s' % repr(q)
+
+        overlaps = Booking.objects.filter(q)
+        
+        print repr(overlaps)
+
+        if overlaps:
+            raise ValidationError("Specified times overlap with nother booking")
+
+        return data
+
     class Meta:
         model = Booking
 
