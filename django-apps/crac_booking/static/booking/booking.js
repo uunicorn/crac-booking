@@ -31,16 +31,19 @@ function timeDiv(time) {
 }
 
 function editBooking(booking) {
+    cleanBookingForm();
+
     $('#add-form-content #url').val(booking.url);
     $('#add-form-content #date').val(moment(booking.from_time).format('DD/MM/YYYY'));
-    $('#add-form-content #from-time').val(moment(booking.from_time).format('HH:mm'));
-    $('#add-form-content #to-time').val(moment(booking.to_time).format('HH:mm'));
+    $('#add-form-content #from_time').val(moment(booking.from_time).format('HH:mm'));
+    $('#add-form-content #to_time').val(moment(booking.to_time).format('HH:mm'));
     $('#add-form-content #pax').val(booking.pax);
     $('#add-form-content #pic').val(booking.pic);
-    $('#add-form-content #email').val(booking.contact_email);
-    $('#add-form-content #phone').val(booking.contact_phone);
+    $('#add-form-content #contact_email').val(booking.contact_email);
+    $('#add-form-content #contact_phone').val(booking.contact_phone);
     $('#add-form-content #details').val(booking.details);
     $('#add-form-content #aircraft').val(aircraftsByUrl[booking.aircraft].rego);
+
     if(booking.url) {
         $('#add-form-content #submit').val('Save');
         $('#add-form-content #delete').show();
@@ -49,6 +52,15 @@ function editBooking(booking) {
         $('#add-form-content #delete').hide();
     }
     $('#add-form-content').modal('show');
+}
+
+function cleanBookingForm() {
+    $('#add-form-content .alerts').empty().hide();
+
+    $('#add-form-content .has-error')
+        .removeClass('has-error')
+        .find('input,textarea')
+        .tooltip('destroy');
 }
 
 function initBookingForm() {
@@ -72,18 +84,20 @@ function initBookingForm() {
     });
 
     $('#add-form-content #submit').click(function() {
+        cleanBookingForm();
+
         var url = $('#add-form-content #url').val(),
             date = $('#add-form-content #date').val(),
-            from = moment(date + ' ' + $('#add-form-content #from-time').val(), 'DD/MM/YYYY HH:mm'),
-            to = moment(date + ' ' + $('#add-form-content #to-time').val(), 'DD/MM/YYYY HH:mm'),
+            from = moment(date + ' ' + $('#add-form-content #from_time').val(), 'DD/MM/YYYY HH:mm'),
+            to = moment(date + ' ' + $('#add-form-content #to_time').val(), 'DD/MM/YYYY HH:mm'),
             request = {
                 "url": url,
                 "from_time": from.utc().format(),
                 "to_time": to.utc().format(),
                 "pax": $('#add-form-content #pax').val(),
                 "pic": $('#add-form-content #pic').val(),
-                "contact_email": $('#add-form-content #email').val(),
-                "contact_phone": $('#add-form-content #phone').val(),
+                "contact_email": $('#add-form-content #contact_email').val(),
+                "contact_phone": $('#add-form-content #contact_phone').val(),
                 "details": $('#add-form-content #details').val(),
                 "aircraft": aircraftsByRego[$('#add-form-content #aircraft').val()].url
             };
@@ -114,8 +128,35 @@ function initBookingForm() {
             }
             $('#add-form-content').modal('hide');
         })
-        .fail(function(e, err, params) {
-            alert('oops: ' + err);
+        .fail(function(e) {
+            var node, response = e.responseJSON;
+
+            $(['from_time', 'to_time', 'pic', 'pax', 'contact_email', 'contact_phone', 'details'])
+                .filter(function() {
+                    return response[this];
+                })
+                .each(function(i) {
+                    var input = $('#' + this);
+
+                    if(input) {
+                        input.closest('.form-group').addClass('has-error');
+                        input.tooltip({trigger: 'focus', placement: 'top', title: response[this]});
+
+                        if(i == 0) {
+                            input.focus();
+                        }
+                    }
+                });
+
+            if(response['non_field_errors']) {
+                node = $('<ul>');
+                
+                $(response['non_field_errors']).each(function() {
+                    node.append($('<li>').text(this));
+                });
+
+                $('#add-form-content .alerts').show().append(node);
+            }
         });
     });
 }
