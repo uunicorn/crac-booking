@@ -372,7 +372,8 @@ function render() {
 
 function init() {
     $('.today').datepicker({
-        format: 'dd/mm/yyyy'
+        format: 'dd/mm/yyyy',
+        autoclose: true
     });
 
     $('.today').change(function() {
@@ -403,7 +404,21 @@ function init() {
     initBookingForm();
 }
 
+function init_spinny_thing() {
+    var node = $('.loading').hide();
+
+    $(document)
+        .ajaxStart(function() {
+            node.show();
+        })
+        .ajaxStop(function() {
+            node.hide();
+        });
+}
+
 $(document).ready(function() {
+    init_spinny_thing();
+
     $.get('api/aircraft/')
     .done(function(acs) {
         aircraftsByRego = {};
