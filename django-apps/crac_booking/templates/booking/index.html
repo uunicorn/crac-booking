@@ -1,13 +1,21 @@
-{% extends "booking/base.html" %}
+{% extends "base.html" %}
 
-{% load staticfiles %}
+{% load cms_tags sekizai_tags staticfiles %}
 
-{% block style %}
-<link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
-<link rel="stylesheet" href="{% static "booking/bootstrap-datepicker.min.css" %}"/>
-{% endblock %}
+{% block content %}
+{% addtoblock "js" %}
+    <script src="{% static "booking/jquery.cookie.js" %}"></script>
+    <script src="{% static "booking/moment.min.js" %}"></script>
+    <script src="{% static "booking/moment-range.min.js" %}"></script>
+    <script src="{% static "booking/bootstrap-datepicker.min.js" %}"></script>
+    <script src="{% static "booking/booking.js" %}"></script>
+{% endaddtoblock %}
 
-{% block contents %}
+{% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
+    <link rel="stylesheet" href="{% static "booking/bootstrap-datepicker.min.css" %}"/>
+{% endaddtoblock %}
+
     <div class="loading"><img src="{% static "booking/images/loading.gif" %}" alt="loading..."></div>
 
     <div class="row">
@@ -92,10 +100,3 @@
     </div>
 {% endblock %}
 
-{% block script %}
-    <script src="{% static "booking/moment.min.js" %}"></script>
-    <script src="{% static "booking/moment-range.min.js" %}"></script>
-    <script src="{% static "booking/bootstrap-datepicker.min.js" %}"></script>
-    <script src="{% static "booking/booking.js" %}"></script>
-    
-{% endblock %}

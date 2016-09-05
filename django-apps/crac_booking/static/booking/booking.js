@@ -1,5 +1,6 @@
 
-var aircraftsByRego,
+var contextPath = '/booking-api', // XXX pass from the server side?
+    aircraftsByRego,
     aircraftsByUrl,
     step = moment.duration(10, 'minutes'),
     selectionStart, // first row clicked, inclusive (moment)
@@ -103,7 +104,7 @@ function initBookingForm() {
             };
 
         $.ajax({
-            url: url ? url : 'api/booking/',
+            url: url ? url : (contextPath + '/booking/'),
             type: url ? 'PUT' : 'POST',
             contentType: 'application/json',
             data: JSON.stringify(request),
@@ -355,7 +356,7 @@ function render() {
         listdiv.append(baseLine(time));
     });
 
-    $.get('api/booking/', { 
+    $.get(contextPath + '/booking/', { 
         from_time: start.format(), 
         to_time: end.format(), 
         aircraft: aircraft 
@@ -419,7 +420,7 @@ function init_spinny_thing() {
 $(document).ready(function() {
     init_spinny_thing();
 
-    $.get('api/aircraft/')
+    $.get(contextPath + '/aircraft/')
     .done(function(acs) {
         aircraftsByRego = {};
         aircraftsByUrl = {};
