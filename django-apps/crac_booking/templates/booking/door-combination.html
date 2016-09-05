@@ -1,23 +1,17 @@
-{% extends "booking/base.html" %}
+{% extends "base.html" %}
 
-{% load staticfiles %}
+{% load staticfiles sekizai_tags %}
 
-{% block style %}
-<link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
-{% endblock %}
+{% block content %}
+    {% addtoblock "css" %}
+        <link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
+    {% endaddtoblock %}
 
-{% block contents %}
     <h1>Enter Door Combination</h1>
     <form method="post">
         {% csrf_token %}
         {{ form }}
-        <input type="submit" value="Submit" />
+        <input type="submit" value="Submit" class="form-control btn-success btn" />
     </form>
 {% endblock %}
 
-{% block script %}
-    <script>
-    $(document).ready(function() {
-    });
-    </script>
-{% endblock %}

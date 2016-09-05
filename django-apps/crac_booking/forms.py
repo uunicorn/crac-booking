@@ -1,7 +1,9 @@
 from django import forms
 
+widget=forms.TextInput(attrs={'class': 'form-control'})
+
 class DoorCombinationForm(forms.Form):
-    combination = forms.CharField(label='Door Combination', max_length=4)
+    combination = forms.CharField(label='Door Combination', max_length=4, widget=widget)
 
     def clean(self):
         cleaned_data = super(DoorCombinationForm, self).clean()
