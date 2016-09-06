@@ -41,3 +41,8 @@ class Booking(models.Model):
     def __str__(self):
         return "%s: %s..%s" % (self.pic, str(self.from_time), str(self.to_time))
 
+class ImportedBooking(models.Model):
+    booking = models.ForeignKey(Booking, blank=True, null=True)
+
+    external_id = models.IntegerField(db_index=True, unique=True)
+
