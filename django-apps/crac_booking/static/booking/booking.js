@@ -8,9 +8,7 @@ var contextPath = '/booking-api', // XXX pass from the server side?
     bookings; // list of bookings
 
 var daylight_table = [ // XXX
-    { start: 1, dawn: '6:50', dusk: '18:10'},
-    { start: 200, dawn: '5:49', dusk: '16:17'},
-    { start: 300, dawn: '12:20', dusk: '19:10'}
+    { start: 1, dawn: '6:30', dusk: '18:10'},
 ];
 
 function getDaylightHours(moment) {
@@ -420,7 +418,9 @@ function init_spinny_thing() {
 $(document).ready(function() {
     init_spinny_thing();
 
-    $.get(contextPath + '/aircraft/')
+    $.get(contextPath + '/aircraft/', {
+	status: 'ACTIVE'
+    })
     .done(function(acs) {
         aircraftsByRego = {};
         aircraftsByUrl = {};

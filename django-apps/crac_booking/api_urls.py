@@ -11,7 +11,6 @@ class MyViewSet(viewsets.ModelViewSet):
     permission_classes = (DoorCombinationPermission,)
     
 class AircraftSerializer(serializers.HyperlinkedModelSerializer):
-    #url = serializers.HyperlinkedIdentityField(view_name='booking:aircraft-detail')
 
     class Meta:
         model = Aircraft
@@ -19,10 +18,10 @@ class AircraftSerializer(serializers.HyperlinkedModelSerializer):
 class AircraftViewSet(MyViewSet):
     queryset = Aircraft.objects.all()
     serializer_class = AircraftSerializer
+    filter_fields=('status',)
+    filter_backends = (filters.DjangoFilterBackend,)
 
 class BookingSerializer(serializers.HyperlinkedModelSerializer):
-    #url = serializers.HyperlinkedIdentityField(view_name='booking:booking-detail')
-    #aircraft = serializers.HyperlinkedRelatedField(view_name='booking:aircraft-detail', queryset = AircraftViewSet.queryset)
 
     def validate(self, data):
         print repr(data)
@@ -57,7 +56,6 @@ class BookingViewSet(MyViewSet):
     serializer_class = BookingSerializer
 
 class MemberSerializer(serializers.HyperlinkedModelSerializer):
-#    url = serializers.HyperlinkedIdentityField(view_name='booking:member-detail')
 
     class Meta:
         model = Member

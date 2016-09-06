@@ -6,15 +6,15 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 old_ac = {
-    None: 'RGA',
-    '': 'RGA',
-    '0': 'RGA',
-    '1': 'RGA',
-    '2': 'RGA',
-    '3': 'RGA',
-    '4': 'RGA',
+    None: 'Unknown',
+    '': 'Unknown',
+    '0': 'Unknown',
+    '1': 'Unknown',
+    '2': 'JOR',
+    '3': 'Unknown',
+    '4': 'Unknown',
     '5': 'RGA',
-    '6': 'RGA'
+    '6': 'RGB'
 }
 
 class Command(BaseCommand):
@@ -32,6 +32,7 @@ class Command(BaseCommand):
                     ext, created = ImportedBooking.objects.get_or_create(external_id=extid)
                     if created:
                         date_from, date_to = [datetime.datetime.fromtimestamp(int(x), pytz.utc) for x in [date_from, date_to]]
+			date_to = date_to + datetime.timedelta(minutes=10)
                         ac = Aircraft.objects.get(rego=old_ac[ac])
                         ext.booking = Booking()
                         ext.booking.from_time = date_from
