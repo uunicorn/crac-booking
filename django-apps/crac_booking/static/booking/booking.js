@@ -372,7 +372,8 @@ function render() {
 function init() {
     $('.today').datepicker({
         format: 'dd/mm/yyyy',
-        autoclose: true
+        autoclose: true,
+        disableTouchKeyboard: true
     });
 
     $('.today').change(function() {
