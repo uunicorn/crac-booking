@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load staticfiles sekizai_tags %}
 
 <!doctype html>
 <html language="en">
@@ -9,14 +9,7 @@
 <link rel="stylesheet" href="{% static "booking/jquery-ui.min.css" %}"/>
 <link rel="stylesheet" href="{% static "booking/bootstrap.min.css" %}"/>
 
-{% block style %} {% endblock %}
-
-    <script src="{% static "booking/jquery-2.2.3.js" %}"></script>
-    <script src="{% static "booking/jquery-ui.min.js" %}"></script>
-    <script src="{% static "booking/jquery.cookie.js" %}"></script>
-    <script src="{% static "booking/bootstrap.min.js" %}"></script>
-    <script src="{% static "booking/moment.min.js" %}"></script>
-{% block script %} {% endblock %}
+{% render_block "css" %}
 
 </head>
 
@@ -38,9 +31,18 @@
         </div>
 
         <div class="container">
-            {% block contents %} {% endblock %}
+            {% block content %} {% endblock %}
         </div>
 
     </div>
 </body>
+
+    <script src="{% static "booking/jquery-2.2.3.js" %}"></script>
+    <script src="{% static "booking/jquery-ui.min.js" %}"></script>
+    <script src="{% static "booking/jquery.cookie.js" %}"></script>
+    <script src="{% static "booking/bootstrap.min.js" %}"></script>
+    <script src="{% static "booking/moment.min.js" %}"></script>
+
+{% render_block "js" %}
+
 </html>

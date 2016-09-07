@@ -21,5 +21,6 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^booking/', include('crac_booking.urls')),
+    url(r'^booking-api/', include('crac_booking.api_urls')),
     url(r'^accounts/login/$', auth_views.login, { 'template_name': 'admin/login.html' }, name='login'),
 ]
