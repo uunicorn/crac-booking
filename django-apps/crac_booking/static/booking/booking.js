@@ -207,9 +207,9 @@ function addNewDiv() {
     return $('<div class="add-new-ops"/>')
         .text('Adding new booking')
         .append($('<div/>')
-            .addClass('pull-right')
-            .append($('<div class="btn">Add</div>').click(addBooking))
-            .append($('<div class="btn">Cancel</div>').click(cancelSelection))
+            .addClass('pull-right btn-group')
+            .append($('<div class="btn btn-success">Add</div>').click(addBooking))
+            .append($('<div class="btn btn-default">Cancel</div>').click(cancelSelection))
         );
 }
 

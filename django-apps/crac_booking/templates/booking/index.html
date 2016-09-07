@@ -19,12 +19,13 @@
     <div class="loading"><img src="{% static "booking/images/loading.gif" %}" alt="loading..."></div>
 
     <div class="row">
-        <div class="btn prev-day">Previous day</div>
-        <div class="btn next-day pull-right">Next day</div>
-    </div>
-    <div class="row">
         <div class="col-lg-2 col-centered">
-            <select id="for-ac" class="form-control"></select>
+            <div class="input-group date">
+		    <select id="for-ac" class="form-control"></select>
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-plane"></span>
+                </div>
+	    </div>
             <div class="input-group date">
                 <input class="today form-control"></input>
                 <div class="input-group-addon">
@@ -33,7 +34,13 @@
             </div>
         </div>
     </div>
-    <div class="js-table-content list-group"></div>
+    <div class="row">
+	<div class="col-xs-6"><div class="btn btn-default prev-day">Previous day</div></div>
+	<div class="col-xs-6"><div class="btn btn-default next-day pull-right">Next day</div></div>
+    </div>
+    <p>
+	    <div class="js-table-content list-group"></div>
+    </p>
 
     <div id="add-form-content" class="modal fade" role="dialog">
         <div class="modal-dialog" role="document">
