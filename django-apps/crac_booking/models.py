@@ -16,12 +16,18 @@ class Aircraft(models.Model):
 class Member(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    cell_phone = models.CharField(max_length=100)
-    email = models.CharField(max_length=100)
+    home_phone = models.CharField(max_length=100, blank=True, null=True)
+    cell_phone = models.CharField(max_length=100, blank=True, null=True)
+    email = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return self.first_name + " " + self.last_name
     
+class ImportedMember(models.Model):
+    booking = models.ForeignKey(Member, blank=True, null=True)
+
+    external_id = models.IntegerField(db_index=True, unique=True)
+
 
 class Booking(models.Model):
     aircraft = models.ForeignKey(Aircraft, on_delete=models.CASCADE)
