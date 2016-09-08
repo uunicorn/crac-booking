@@ -63,6 +63,9 @@ class MemberSerializer(serializers.HyperlinkedModelSerializer):
 class MemberViewSet(MyViewSet):
     queryset = Member.objects.all()
     serializer_class = MemberSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('first_name', 'last_name')
+
 
 api_router = routers.DefaultRouter()
 api_router.register(r'aircraft', AircraftViewSet)
