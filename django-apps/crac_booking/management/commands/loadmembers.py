@@ -12,20 +12,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with open(options['fname'], 'rb') as csvfile:
             with transaction.atomic():
-                reader = csv.reader(csvfile, delimiter=',', quotechar='"', escapechar='\\')
+                reader = csv.DictReader(csvfile)
                 for row in reader:
-                    extid, fname, lname, phone, mobile, email = row
-                    ext, created = ImportedMember.objects.get_or_create(external_id=extid)
-                    if created:
-                        ext.member = Member()
-                        ext.member.first_name = fname
-                        ext.member.last_name = lname
-                        ext.member.home_phone = phone
-                        ext.member.cell_phone = mobile
-                        ext.member.email = email
-                        ext.member.save()
-                        ext.save()
+                    member = Member()
+                    member.first_name = row['First Name']
+                    member.last_name = row['Last Name']
+                    member.home_phone = row['Phone']
+                    member.cell_phone = row['Alt. Phone']
+                    member.email = row['Email']
+
+                    if member.first_name and member.last_name:
+                        member.save()
 
                         print repr(row)
-            
-

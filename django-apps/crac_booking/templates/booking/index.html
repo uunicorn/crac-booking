@@ -8,12 +8,16 @@
     <script src="{% static "booking/moment.min.js" %}"></script>
     <script src="{% static "booking/moment-range.min.js" %}"></script>
     <script src="{% static "booking/bootstrap-datepicker.min.js" %}"></script>
+    <script src="{% static "booking/select2.min.js" %}"></script>
     <script src="{% static "booking/booking.js" %}"></script>
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
     <link rel="stylesheet" href="{% static "booking/booking.css" %}"/>
     <link rel="stylesheet" href="{% static "booking/bootstrap-datepicker.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "booking/select2.min.css" %}"/>
+    <link rel="stylesheet" href="{% static "booking/select2-bootstrap.css" %}"/>
+    
 {% endaddtoblock %}
 
     <div class="loading"><img src="{% static "booking/images/loading.gif" %}" alt="loading..."></div>
@@ -75,13 +79,13 @@
                         <div class="form-group">
                             <label class="col-lg-4 control-label" for="pic">PiC</label>
                             <div class="col-lg-8">
-                                <input type="text" id="pic" class="form-control">
+                                <select id="pic" class="form-control member-select" style="width: 100%"></select>
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-lg-4 control-label" for="pax">Pax/Instructor</label>
                             <div class="col-lg-8">
-                                <input type="text" id="pax" class="form-control">
+                                <select id="pax" class="form-control member-select" style="width: 100%"></select>
                             </div>
                         </div>
                         <div class="form-group">

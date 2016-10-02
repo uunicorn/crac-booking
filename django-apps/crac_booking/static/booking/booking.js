@@ -36,8 +36,8 @@ function editBooking(booking) {
     $('#add-form-content #date').val(moment(booking.from_time).format('DD/MM/YYYY'));
     $('#add-form-content #from_time').val(moment(booking.from_time).format('HH:mm'));
     $('#add-form-content #to_time').val(moment(booking.to_time).format('HH:mm'));
-    $('#add-form-content #pax').val(booking.pax);
-    $('#add-form-content #pic').val(booking.pic);
+    $('#add-form-content #pic').val(booking.pic).trigger('change');
+    $('#add-form-content #pax').val(booking.pax).trigger('change');
     $('#add-form-content #contact_email').val(booking.contact_email);
     $('#add-form-content #contact_phone').val(booking.contact_phone);
     $('#add-form-content #details').val(booking.details);
@@ -63,6 +63,76 @@ function cleanBookingForm() {
 }
 
 function initBookingForm() {
+    $.fn.select2.defaults.set( "theme", "bootstrap" );
+
+    // hack to allow select2 to work with bootstrap
+    $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
+    $('.member-select').select2({
+        ajax: {
+            url: contextPath + "/member/",
+            delay: 250,
+            cache: true,
+            dataType: 'json',
+            data: function (params) {
+                return { search: params.term };
+                /*
+                return {
+                    search: params.term,
+                    page: params.page
+                };
+                */
+            },
+
+            processResults: function (data, params) {
+                if(data.length === 0) {
+                    return {
+                        results: [ {
+                            id: params.term,
+                            text: params.term,
+                            freetext: true
+                        } ]
+                    };
+                }
+
+                return {
+                    results: $(data).map(function() {
+                        var fullname = this.first_name + ' ' + this.last_name;
+
+                        return {
+                            id: fullname,
+                            text: fullname
+                        };
+                    })/*,
+                    pagination: { 
+                        more: true 
+                    }*/
+                };
+            }
+        },
+        minimumInputLength: 3,
+        escapeMarkup: function (markup) { 
+            return markup;
+        },
+        templateResult: function(member) {
+            if (member.loading) {
+                return member.text;
+            }
+
+            if(member.freetext) {
+                return $('<span>Use what I typed</span>');
+            }
+
+            return $('<span class="clearfix">').text(member.text);
+        },
+        templateSelection: function(member) {
+            return member.text;
+        },
+        selectOnBlur: true,
+        multiple: false,
+        debug: true
+    });
+
     $('#add-form-content #delete').click(function() {
         var url = $('#add-form-content #url').val();
 
