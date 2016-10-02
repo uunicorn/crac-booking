@@ -8,7 +8,7 @@ var contextPath = '/booking-api', // XXX pass from the server side?
     bookings; // list of bookings
 
 var daylight_table = [ // XXX
-    { start: 1, dawn: '6:30', dusk: '18:10'},
+    { start: 1, dawn: '6:30', dusk: '20:00'},
 ];
 
 function getDaylightHours(moment) {
@@ -268,7 +268,11 @@ function select(time) {
     if(selectionStart == null) {
         selectionStart = selectionEnd = time;
     } else {
-        selectionEnd = time;
+        if(time.isBefore(selectionStart)) {
+            selectionStart = time;
+        } else {
+            selectionEnd = time;
+        }
     }
     $('.booking-line').trigger('selection-changed')
 }
