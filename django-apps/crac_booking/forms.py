@@ -1,4 +1,7 @@
+from django.conf import settings
 from django import forms
+
+DOOR_COMBINATIONS = settings.DOOR_COMBINATIONS
 
 widget=forms.TextInput(attrs={'class': 'form-control'})
 
@@ -8,6 +11,6 @@ class DoorCombinationForm(forms.Form):
     def clean(self):
         cleaned_data = super(DoorCombinationForm, self).clean()
         combination = cleaned_data.get('combination')
-        if combination != '1234':
+        if not combination in DOOR_COMBINATIONS:
             raise forms.ValidationError('Door combination is incorrect', code='invalid')
 

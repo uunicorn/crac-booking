@@ -36,8 +36,8 @@ function editBooking(booking) {
     $('#add-form-content #date').val(moment(booking.from_time).format('DD/MM/YYYY'));
     $('#add-form-content #from_time').val(moment(booking.from_time).format('HH:mm'));
     $('#add-form-content #to_time').val(moment(booking.to_time).format('HH:mm'));
-    $('#add-form-content #pic').val(booking.pic).trigger('change');
-    $('#add-form-content #pax').val(booking.pax).trigger('change');
+    $('#add-form-content #pic').data('select2').dataAdapter.select({ id: booking.pic, text: booking.pic });
+    $('#add-form-content #pax').data('select2').dataAdapter.select({ id: booking.pax, text: booking.pax });
     $('#add-form-content #contact_email').val(booking.contact_email);
     $('#add-form-content #contact_phone').val(booking.contact_phone);
     $('#add-form-content #details').val(booking.details);
