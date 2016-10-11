@@ -285,7 +285,7 @@ function select(time) {
 
 function addNewDiv() {
     return $('<div class="add-new-ops"/>')
-        .text('Adding new booking')
+        .append($('<p/>').text('Adding new booking. To adjust your time block, click on the start and end times. Remember to allow time for preflighting and warming up the aircraft.'))
         .append($('<div/>')
             .addClass('pull-right btn-group')
             .append($('<div class="btn btn-success">Add</div>').click(addBooking))
