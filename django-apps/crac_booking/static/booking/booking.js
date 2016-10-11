@@ -76,12 +76,6 @@ function initBookingForm() {
             dataType: 'json',
             data: function (params) {
                 return { search: params.term };
-                /*
-                return {
-                    search: params.term,
-                    page: params.page
-                };
-                */
             },
 
             processResults: function (data, params) {
@@ -101,12 +95,10 @@ function initBookingForm() {
 
                         return {
                             id: fullname,
-                            text: fullname
+                            text: fullname,
+                            original: this
                         };
-                    })/*,
-                    pagination: { 
-                        more: true 
-                    }*/
+                    })
                 };
             }
         },
@@ -131,6 +123,20 @@ function initBookingForm() {
         selectOnBlur: true,
         multiple: false,
         debug: true
+    });
+
+    $('#pic').on('select2:select', function(e) {
+        var data = e.params.data.original;
+
+        if(data) {
+            if(!$('#contact_email').val() && data.email) {
+                $('#contact_email').val(data.email);
+            }
+
+            if(!$('#contact_phone').val() && data.cell_phone) {
+                $('#contact_phone').val(data.cell_phone);
+            }
+        }
     });
 
     $('#add-form-content #delete').click(function() {
