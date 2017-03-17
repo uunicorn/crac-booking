@@ -20,6 +20,9 @@ class Member(models.Model):
     cell_phone = models.CharField(max_length=100, blank=True, null=True)
     email = models.CharField(max_length=100, blank=True, null=True)
 
+    class Meta:
+	ordering = ('first_name', 'last_name')
+
     def __str__(self):
         return self.first_name + " " + self.last_name
     

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load sekizai_tags staticfiles %}
+
+{% block content %}
+<h2>CRAC Members</h2>
+	<table class="table table-stripped">
+	<thead><th>First name</th>
+		<th>Last name </th>
+		<th>Home phone</th>
+		<th>Cell phone</th>
+		<th>Email</th>
+	</thead>
+	{% for m in members %}
+		<tr><td>{{ m.first_name }}</td>
+		<td>{{ m.last_name }} </td>
+		<td>{{ m.home_phone }} </td>
+		<td>{{ m.cell_phone }} </td>
+		<td>{{ m.email }} </td>
+
+		</tr>
+	{% endfor %}
+	</table>
+{% endblock %}
+

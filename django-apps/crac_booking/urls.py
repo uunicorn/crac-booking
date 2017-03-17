@@ -6,6 +6,6 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^door-combination', views.door_combination),
     url(r'^reset', views.reset),
-    url(r'^popup', views.popup)
+    url(r'^members', views.members)
 ]
 
