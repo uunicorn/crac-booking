@@ -26,6 +26,9 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
     def validate(self, data):
         print repr(data)
 
+	if data['from_time'] > data['to_time']:
+            raise ValidationError("'From time' should be before 'To time'")
+
         q = (Q(from_time__gte=data['from_time'], from_time__lt=data['to_time']) | 
             Q(to_time__gt=data['from_time'], to_time__lte=data['to_time']))
 
