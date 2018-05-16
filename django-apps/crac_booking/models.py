@@ -42,7 +42,7 @@ class Booking(models.Model):
     pic = models.CharField(max_length=100)
     contact_email = models.CharField(max_length=100)
     contact_phone = models.CharField(max_length=100)
-    details = models.CharField(max_length=1000, blank=True)
+    details = models.CharField(max_length=1000)
 
     class Meta:
         ordering = ('from_time',)
