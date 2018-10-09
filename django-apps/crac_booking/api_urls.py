@@ -24,9 +24,9 @@ class AircraftViewSet(MyViewSet):
 class BookingSerializer(serializers.HyperlinkedModelSerializer):
 
     def validate(self, data):
-        print repr(data)
+        print(repr(data))
 
-	if data['from_time'] > data['to_time']:
+        if data['from_time'] > data['to_time']:
             raise ValidationError("'From time' should be before 'To time'")
 
         q = (Q(from_time__gte=data['from_time'], from_time__lt=data['to_time']) | 
@@ -37,11 +37,11 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
         if self.instance:
             q = ~Q(pk=self.instance.pk) & q
 
-        print '>>>> %s' % repr(q)
+        print('>>>> %s' % repr(q))
 
         overlaps = Booking.objects.filter(q)
         
-        print repr(overlaps)
+        print(repr(overlaps))
 
         if overlaps:
             raise ValidationError("Specified times overlap with nother booking")

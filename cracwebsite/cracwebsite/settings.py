@@ -15,6 +15,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+DOOR_COMBINATIONS = ['1234']
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -23,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0%a_%g8ll*a3i_-k#6eq_hc89t8t#yckzehyg_638inqphz##s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False 
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -33,14 +34,14 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'crac_booking.apps.CracBookingConfig',
     'rest_framework',
-    'sekizai',
+ #   'sekizai',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djangocms_googlecalendar',
+#    'djangocms_googlecalendar',
 ]
 
 MIDDLEWARE_CLASSES = [

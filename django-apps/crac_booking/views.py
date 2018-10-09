@@ -24,10 +24,10 @@ def door_combination(request):
         form = DoorCombinationForm(request.POST)
         if form.is_valid():
             request.session['door-combination'] = True
-	    if request.GET.get('target') == 'members':
-		return HttpResponseRedirect('/booking/members')
-	    else: 
-            	return HttpResponseRedirect('/booking/')
+            if request.GET.get('target') == 'members':
+                return HttpResponseRedirect('/booking/members')
+            else: 
+                return HttpResponseRedirect('/booking/')
     else:
         form = DoorCombinationForm()
 
