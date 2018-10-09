@@ -34,7 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'crac_booking.apps.CracBookingConfig',
     'rest_framework',
- #   'sekizai',
+    'sekizai',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
