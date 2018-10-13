@@ -40,6 +40,8 @@ function editBooking(booking) {
     $('#add-form-content #pax').data('select2').dataAdapter.select({ id: booking.pax, text: booking.pax });
     $('#add-form-content #contact_email').val(booking.contact_email);
     $('#add-form-content #contact_phone').val(booking.contact_phone);
+    $('#add-form-content #hobs_start').val(booking.hobs_start);
+    $('#add-form-content #hobs_end').val(booking.hobs_end);
     $('#add-form-content #details').val(booking.details);
     $('#add-form-content #aircraft').val(aircraftsByUrl[booking.aircraft].rego);
 
@@ -53,10 +55,26 @@ function editBooking(booking) {
     $('#add-form-content').modal('show');
 }
 
-function cleanBookingForm() {
-    $('#add-form-content .alerts').empty().hide();
+function terminateFlight(booking) {
+    var $node = $('#terminate-flight-form-content'); 
 
-    $('#add-form-content .has-error')
+    cleanForm($node);
+
+    $node.find('#term_hobs_start').val(booking.hobs_start);
+    $node.find('#term_hobs_end').val(booking.hobs_end);
+    $node.data(booking);
+    
+    $('#terminate-flight-form-content').modal('show');
+}
+
+function cleanBookingForm() {
+    cleanForm($('#add-form-content'));
+}
+
+function cleanForm($node) {
+    $node.find('.alerts').empty().hide();
+
+    $node.find('.has-error')
         .removeClass('has-error')
         .find('input,textarea')
         .tooltip('destroy');
@@ -174,6 +192,8 @@ function initBookingForm() {
                 "contact_email": $('#add-form-content #contact_email').val(),
                 "contact_phone": $('#add-form-content #contact_phone').val(),
                 "details": $('#add-form-content #details').val(),
+                "hobs_start": $('#add-form-content #hobs_start').val() || null,
+                "hobs_end": $('#add-form-content #hobs_end').val() || null,
                 "aircraft": aircraftsByRego[$('#add-form-content #aircraft').val()].url
             };
 
@@ -234,6 +254,65 @@ function initBookingForm() {
             }
         });
     });
+
+    $('#terminate-flight-form-content #term_submit').click(function() {
+        var $node = $('#terminate-flight-form-content'); 
+
+        cleanForm($node);
+
+        var booking = $node.data();
+        booking.hobs_start = $node.find('#term_hobs_start').val();
+        booking.hobs_end = $node.find('#term_hobs_end').val();
+
+        $.ajax({
+            url: booking.url,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(booking),
+            beforeSend: function(xhr){
+                xhr.setRequestHeader('X-CSRFToken', $.cookie('csrftoken'));
+            }
+        })
+        .done(function(booking) {
+            var currentAcUrl = aircraftsByRego[$('#for-ac').val()].url;
+
+            $('.booking-line').trigger('del-booking', [booking.url]);
+            $('.booking-line').trigger('add-booking', [booking]);
+
+            $node.modal('hide');
+        })
+        .fail(function(e) {
+            var node, response = e.responseJSON;
+
+            $(['hobs_start', 'hobs_end'])
+                .filter(function() {
+                    return response[this];
+                })
+                .each(function(i) {
+                    var input = $('#term_' + this);
+
+                    if(input) {
+                        input.closest('.form-group').addClass('has-error');
+                        input.tooltip({trigger: 'focus', placement: 'top', title: response[this]});
+
+                        if(i == 0) {
+                            input.focus();
+                        }
+                    }
+                });
+
+            if(response['non_field_errors']) {
+                node = $('<ul>');
+                
+                $(response['non_field_errors']).each(function() {
+                    node.append($('<li>').text(this));
+                });
+
+                $node.find('.alerts').show().append(node);
+            }
+        });
+    });
+
 }
 
 function addBooking(e) {
@@ -306,6 +385,15 @@ function existingBookingHeaderDiv(booking) {
             .addClass('col-md-4')
             .append('<strong>Pax:</strong>')
             .append($('<span>').text(booking.pax))
+        )
+        .append($('<div/>')
+            .addClass('pull-right btn-group')
+            .append($('<div class="btn btn-default">Terminate the flight</div>')
+                .click(function(e) {
+                    e.stopPropagation();
+
+                    terminateFlight(booking);
+                }))
         );
 }
 

@@ -46,6 +46,39 @@
 	    <div class="js-table-content list-group"></div>
     </p>
 
+    <div id="terminate-flight-form-content" class="modal fade" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class="close" data-dismiss="modal">×</a>
+                    <h3>Terminate the flight</h3>
+                </div>
+                <div class="modal-body">
+                    <p class="alerts bg-danger"></p>
+                    <form class="terminate-flight-form" name="terminate-flight-form">
+                        <div class="row form-group">
+                            <label class="col-lg-4 control-label" for="term_hobs_start">Hobs before the flight</label>
+                            <div class="col-lg-8">
+                                <input type="text" id="term_hobs_start" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-lg-4 control-label" for="term_hobs_end">Hobs after the flight</label>
+                            <div class="col-lg-8">
+                                <input type="text" id="term_hobs_end" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <input class="btn btn-success" type="submit" value="Save" id="term_submit">
+                    <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="add-form-content" class="modal fade" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -58,6 +91,8 @@
                     <form class="booking-form" name="booking-form">
                         <input type="hidden" id="url">
                         <input type="hidden" id="date">
+                        <input type="hidden" id="hobs_start">
+                        <input type="hidden" id="hobs_end">
                         <div class="form-group">
                             <label class="col-lg-4 control-label" for="aircraft">Aircraft</label>
                             <div class="col-lg-8">

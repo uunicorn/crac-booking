@@ -44,6 +44,9 @@ class Booking(models.Model):
     contact_phone = models.CharField(max_length=100)
     details = models.CharField(max_length=1000)
 
+    hobs_start = models.IntegerField(db_index=True, null=True)
+    hobs_end = models.IntegerField(db_index=True, null=True)
+
     class Meta:
         ordering = ('from_time',)
 
