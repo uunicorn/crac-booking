@@ -17,10 +17,12 @@ from django.conf.urls import url, include
 from django.contrib import admin
 import crac_booking.urls
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^booking/', include('crac_booking.urls')),
     url(r'^booking-api/', include('crac_booking.api_urls')),
     url(r'^accounts/login/$', auth_views.login, { 'template_name': 'admin/login.html' }, name='login'),
+    url(r'^react-booking/', TemplateView.as_view(template_name='index.html'))
 ]

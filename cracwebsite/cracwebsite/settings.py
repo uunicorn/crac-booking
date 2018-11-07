@@ -60,7 +60,10 @@ ROOT_URLCONF = 'cracwebsite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'cracwebsite', 'templates'),],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'cracwebsite', 'templates'), 
+            os.path.join(BASE_DIR, '..', 'crac-react-booking', 'dist'), 
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -125,6 +128,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, '..', 'crac-react-booking', 'dist', 'static'), 
+];
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [],
