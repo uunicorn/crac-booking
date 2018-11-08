@@ -56,15 +56,24 @@ function editBooking(booking) {
 }
 
 function terminateFlight(booking) {
-    var $node = $('#terminate-flight-form-content'); 
+    var $node = $('#terminate-flight-form-content')
+        aircraft = $('#for-ac').val();
 
-    cleanForm($node);
+    $.get(contextPath + '/latest-hobs', { 
+        aircraft: aircraft 
+    })
+    .done(function(d) {
+        cleanForm($node);
 
-    $node.find('#term_hobs_start').val(booking.hobs_start);
-    $node.find('#term_hobs_end').val(booking.hobs_end);
-    $node.data(booking);
-    
-    $('#terminate-flight-form-content').modal('show');
+        $node.find('#term_hobs_start').val(booking.hobs_start || d.latest_hobs);
+        $node.find('#term_hobs_end').val(booking.hobs_end || d.latest_hobs);
+        $node.data(booking);
+        
+        $('#terminate-flight-form-content').modal('show');
+    })
+    .fail(function(e, err, params) {
+        alert('oops: ' + err);
+    });
 }
 
 function cleanBookingForm() {
@@ -388,12 +397,20 @@ function existingBookingHeaderDiv(booking) {
         )
         .append($('<div/>')
             .addClass('pull-right btn-group')
-            .append($('<div class="btn btn-default">Terminate the flight</div>')
-                .click(function(e) {
-                    e.stopPropagation();
-
-                    terminateFlight(booking);
-                }))
+            .append(booking.hobs_end ? 
+                $('<a href="#">')
+                    .text('Hobs: ' + booking.hobs_start + ' .. ' + booking.hobs_end)
+                    .click(function(e) {
+                        e.stopPropagation();
+                        terminateFlight(booking);
+                    }) 
+                : 
+                $('<div class="btn btn-default">Terminate the flight</div>')
+                    .click(function(e) {
+                        e.stopPropagation();
+                        terminateFlight(booking);
+                    }) 
+            )
         );
 }
 

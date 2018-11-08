@@ -6,6 +6,8 @@ from .models import *
 from .filters import BookingFilter
 from rest_framework import routers, serializers, viewsets, filters
 from . import views
+from rest_framework.settings import api_settings
+from rest_framework_csv import renderers as csv_renderers
 
 class MyViewSet(viewsets.ModelViewSet):
     permission_classes = (DoorCombinationPermission,)
@@ -52,6 +54,7 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
         model = Booking
 
 class BookingViewSet(MyViewSet):
+    renderer_classes = tuple(api_settings.DEFAULT_RENDERER_CLASSES) + (csv_renderers.CSVRenderer, ) 
     queryset = Booking.objects.all()
     filter_backends = (filters.DjangoFilterBackend,filters.OrderingFilter)
     filter_class = BookingFilter
@@ -75,5 +78,6 @@ api_router.register(r'aircraft', AircraftViewSet)
 api_router.register(r'booking', BookingViewSet)
 api_router.register(r'member', MemberViewSet)
 
-urlpatterns = api_router.urls
-
+urlpatterns = [
+    url(r'^latest-hobs', views.latest_hobs),
+] + api_router.urls

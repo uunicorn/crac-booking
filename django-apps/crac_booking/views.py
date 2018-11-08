@@ -8,6 +8,7 @@ import datetime
 from .forms import DoorCombinationForm
 from .models import *
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 
 def index(request):
     if not request.session.get('door-combination', False):
@@ -15,6 +16,21 @@ def index(request):
 
     context = {  }
     return render(request, 'booking/index.html', context)
+
+def latest_hobs(request):
+    if not request.session.get('door-combination', False):
+        return HttpResponseRedirect('/booking/door-combination/')
+
+    aircraft = request.GET.get('aircraft')
+    last=Booking.objects.filter(aircraft__rego=aircraft).order_by('-hobs_end', '-from_time').first()
+
+    if last:
+        data = { 'latest_hobs': last.hobs_end }
+    else:
+        data = { 'latest_hobs': 0 }
+
+    return JsonResponse(data)
+    
 
 def door_combination(request):
     if request.session.get('door-combination', False):
