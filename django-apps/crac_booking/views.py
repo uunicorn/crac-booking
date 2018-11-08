@@ -17,6 +17,13 @@ def index(request):
     context = {  }
     return render(request, 'booking/index.html', context)
 
+def export(request):
+    if not request.session.get('door-combination', False):
+        return HttpResponseRedirect('/booking/door-combination/')
+
+    context = {  }
+    return render(request, 'booking/export.html', context)
+
 def latest_hobs(request):
     if not request.session.get('door-combination', False):
         return HttpResponseRedirect('/booking/door-combination/')

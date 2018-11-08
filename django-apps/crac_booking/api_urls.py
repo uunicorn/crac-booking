@@ -24,7 +24,6 @@ class AircraftViewSet(MyViewSet):
     filter_backends = (filters.DjangoFilterBackend,)
 
 class BookingSerializer(serializers.HyperlinkedModelSerializer):
-
     def validate(self, data):
         print(repr(data))
 
@@ -49,6 +48,13 @@ class BookingSerializer(serializers.HyperlinkedModelSerializer):
             raise ValidationError("Specified times overlap with nother booking")
 
         return data
+
+    ac_rego = serializers.CharField(read_only=True)
+
+    def to_representation(self, instance):
+        ret = super(BookingSerializer, self).to_representation(instance)
+        ret['ac_rego'] = instance.aircraft.rego
+        return ret
 
     class Meta:
         model = Booking

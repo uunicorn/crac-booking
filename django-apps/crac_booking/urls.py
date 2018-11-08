@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^door-combination', views.door_combination),
     url(r'^reset', views.reset),
-    url(r'^members', views.members)
+    url(r'^members', views.members),
+    url(r'^export', views.export)
 ]
 

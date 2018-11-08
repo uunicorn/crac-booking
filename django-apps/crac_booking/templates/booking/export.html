@@ -1,0 +1,44 @@
+{% extends "base-nologo.html" %}
+
+{% load sekizai_tags staticfiles %}
+
+{% block content %}
+{% addtoblock "js" %}
+    <script src="{% static "booking/jquery.cookie.js" %}"></script>
+    <script src="{% static "booking/moment.min.js" %}"></script>
+    <script src="{% static "booking/moment-range.min.js" %}"></script>
+    <script src="{% static "booking/bootstrap-datepicker.min.js" %}"></script>
+    <script src="{% static "booking/export.js" %}"></script>
+{% endaddtoblock %}
+
+{% addtoblock "css" %}
+    <link rel="stylesheet" href="{% static "booking/bootstrap-datepicker.min.css" %}"/>
+    
+{% endaddtoblock %}
+
+    <div class="loading"><img src="{% static "booking/images/loading.gif" %}" alt="loading..."></div>
+
+    <h1>Export bookings for selected range</h1>
+
+    <form class="export-form" name="export-form">
+        <div class="form-group">
+            <label for="start-date" class="form-label">Star date</label>
+            <div class="input-group">
+                <input id="start-date" class="date form-control"></input>
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+            <label for="start-date" class="form-label">End date</label>
+            <div class="input-group">
+                <input id="end-date" class="date form-control"></input>
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+        </div>
+        <input class="btn btn-success" type="submit" value="Export" id="submit">
+    </form>
+
+{% endblock %}
+
