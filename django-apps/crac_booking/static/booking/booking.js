@@ -399,7 +399,10 @@ function existingBookingHeaderDiv(booking) {
             .addClass('pull-right btn-group')
             .append(booking.hobs_end ? 
                 $('<a href="#">')
-                    .text('Hobs: ' + booking.hobs_start + ' .. ' + booking.hobs_end)
+                    .text('Hobbs: ' + booking.hobs_start 
+                          + ' .. ' + booking.hobs_end
+                          + ' ($' + (125.0*(booking.hobs_end-booking.hobs_start)).toFixed(2)
+                          + ')')
                     .click(function(e) {
                         e.stopPropagation();
                         terminateFlight(booking);
