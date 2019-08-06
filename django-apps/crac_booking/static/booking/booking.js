@@ -4,8 +4,11 @@ var contextPath = '/booking-api', // XXX pass from the server side?
     aircraftsByUrl,
     step = moment.duration(10, 'minutes'),
     selectionStart, // first row clicked, inclusive (moment)
-    selectionEnd, // last row clicked, inclusive (moment)
-    bookings; // list of bookings
+    selectionEnd,   // last row clicked, inclusive (moment)
+    selectionRego,  // selection column
+    bookings,       // list of bookings
+    phone = null;   // phone mode
+
 
 var daylight_table = [ // XXX
     { start: 1, dawn: '6:30', dusk: '20:00'},
@@ -25,7 +28,6 @@ function getDaylightHours(moment) {
 function timeDiv(time) {
     return $('<div/>')
         .addClass('time')
-        .addClass('col-md-1')
         .text(time.format('HH:mm'));
 }
 
@@ -56,8 +58,8 @@ function editBooking(booking) {
 }
 
 function terminateFlight(booking) {
-    var $node = $('#terminate-flight-form-content')
-        aircraft = $('#for-ac').val();
+    var $node = $('#terminate-flight-form-content'),
+        aircraft = aircraftsByUrl[booking.aircraft].rego;
 
     $.get(contextPath + '/latest-hobs', { 
         aircraft: aircraft 
@@ -177,7 +179,7 @@ function initBookingForm() {
             }
         })
         .done(function(booking) {
-            $('.booking-line').trigger('del-booking', [url]);
+            $('.booking-line .contents').trigger('del-booking', [url]);
             $('#add-form-content').modal('hide');
         })
         .fail(function(e, err, params) {
@@ -216,19 +218,13 @@ function initBookingForm() {
             }
         })
         .done(function(booking) {
-            var currentAcUrl = aircraftsByRego[$('#for-ac').val()].url;
-
             if(url) {
-                $('.booking-line').trigger('del-booking', [url]);
-                if(request.aircraft === currentAcUrl) {
-                    $('.booking-line').trigger('add-booking', [request]);
-                }
+                $('.booking-line .contents').trigger('del-booking', [url]);
+                $('.booking-line .contents').trigger('add-booking', [request]);
             } else {
-                selectionStart = selectionEnd = null;
-                $('.booking-line').trigger('selection-changed');
-                if(booking.aircraft === currentAcUrl) {
-                    $('.booking-line').trigger('add-booking', [booking]);
-                }
+                selectionStart = selectionEnd = selectionRego = null;
+                $('.booking-line .contents').trigger('selection-changed');
+                $('.booking-line .contents').trigger('add-booking', [booking]);
             }
             $('#add-form-content').modal('hide');
         })
@@ -283,10 +279,8 @@ function initBookingForm() {
             }
         })
         .done(function(booking) {
-            var currentAcUrl = aircraftsByRego[$('#for-ac').val()].url;
-
-            $('.booking-line').trigger('del-booking', [booking.url]);
-            $('.booking-line').trigger('add-booking', [booking]);
+            $('.booking-line .contents').trigger('del-booking', [booking.url]);
+            $('.booking-line .contents').trigger('add-booking', [booking]);
 
             $node.modal('hide');
         })
@@ -347,18 +341,18 @@ function addBooking(e) {
         "contact_email": '',
         "contact_phone": '',
         "details": '',
-        "aircraft": aircraftsByRego[$('#for-ac').val()].url
+        "aircraft": aircraftsByRego[selectionRego].url
     });
 
 }
 
 function cancelSelection(e) {
     e.stopPropagation();
-    selectionStart = selectionEnd = null;
-    $('.booking-line').trigger('selection-changed');
+    selectionStart = selectionEnd = selectionRego = null;
+    $('.booking-line .contents').trigger('selection-changed');
 }
 
-function select(time) {
+function select(time, rego) {
     if(selectionStart == null) {
         selectionStart = selectionEnd = time;
     } else {
@@ -368,7 +362,8 @@ function select(time) {
             selectionEnd = time;
         }
     }
-    $('.booking-line').trigger('selection-changed')
+    selectionRego = rego;
+    $('.booking-line .contents').trigger('selection-changed')
 }
 
 function addNewDiv() {
@@ -417,101 +412,137 @@ function existingBookingHeaderDiv(booking) {
         );
 }
 
-function baseLine(time) {
-    var booking,
-        header = false, 
-        selection = false,
-        rowrange = moment.range(time, time.clone().add(step)),
+function headerLine() {
+    var div = $('<div>')
+            .addClass('header-line');
 
+    $('<div>')
+        .addClass('time')
+        .text('Time')
+        .appendTo(div);
+
+    $(Object.keys(aircraftsByRego)).each(function() {
+        var rego = '' + this,
+            contents = $('<div>')
+                .addClass('header-contents')
+                .text(rego)
+                .appendTo(div);
+    });
+
+    return div;
+}
+
+function baseLine(time) {
+    var rowrange = moment.range(time, time.clone().add(step)),
         div = $('<div>')
             .addClass('booking-line')
-            .addClass('row')
-            .addClass('list-group-item')
             .addClass('list-group-item-action')
-            .append(timeDiv(time))
-            .append('<div class="contents">');
+            .append(timeDiv(time));
 
-    div.bind('selection-changed', function(e) {
-        var min = selectionStart, 
-            max = selectionEnd,
-            selectedrange,
-            tmp;
 
-        if(booking) {
+    $(Object.keys(aircraftsByRego)).each(function() {
+        var rego = '' + this,
+            booking,
+            header = false, 
+            selection = false,
+            contents = $('<div>')
+                .addClass('contents')
+                .addClass('contents-' + rego);
+
+        if(phone === true && rego !== $('#for-ac').val()) {
             return;
         }
 
-        if(min) {
-            if(max.isBefore(min)) {
-                tmp = min;
-                min = max;
-                max = tmp;
+        contents.appendTo(div);
+
+        contents.bind('selection-changed', function(e) {
+            var min = selectionStart, 
+                max = selectionEnd,
+                selectedrange,
+                tmp;
+
+            if(booking) {
+                return;
             }
 
-            selectedrange = moment.range(min, max.clone().add(step));
-        }
+            if(min) {
+                if(max.isBefore(min)) {
+                    tmp = min;
+                    min = max;
+                    max = tmp;
+                }
 
-        if(min && time.isSame(min)) {
-            if(!header) {
-                div.find('.contents').html(addNewDiv())
-                header = true;
+                selectedrange = moment.range(min, max.clone().add(step));
             }
-        } else {
+
+            if(min && time.isSame(min) && rego === selectionRego) {
+                if(!header) {
+                    contents.html(addNewDiv())
+                    header = true;
+                }
+            } else {
+                if(header) {
+                    contents.empty();
+                    header = false;
+                }
+            }
+
+            if(min && rowrange.overlaps(selectedrange) && rego === selectionRego) {
+                if(!selection) {
+                    contents.addClass('selection');
+                    selection = true;
+                }
+            } else {
+                if(selection) {
+                    contents.removeClass('selection');
+                    selection = false;
+                }
+            }
+        });
+
+        contents.bind('add-booking', function(e, params) {
+            var min = moment(params.from_time),
+                max = moment(params.to_time),
+                bookingrange = moment.range(min, max);
+
+            if(rowrange.overlaps(bookingrange) && aircraftsByUrl[params.aircraft].rego === rego) {
+                booking = params;
+
+                contents.addClass('booked');
+
+                if(time.isSame(min)) {
+                    contents.html(existingBookingHeaderDiv(booking));
+                }
+            }
+        });
+
+        contents.bind('del-booking', function(e, params) {
+            if(booking && booking.url === params) {
+                contents.empty();
+                booking = null;
+                contents.removeClass('booked');
+            }
+        });
+
+        contents.click(function() {
+            if(booking) {
+                editBooking(booking);
+                return;
+            }
+
             if(header) {
-                div.find('.contents').empty();
-                header = false;
+                return;
             }
-        }
 
-        if(min && rowrange.overlaps(selectedrange)) {
-            if(!selection) {
-                div.addClass('selection');
-                selection = true;
+            // ignore clicks on any other column while selection is in progress
+            if(selectionStart != null && rego !== selectionRego) {
+                return;
             }
-        } else {
-            if(selection) {
-                div.removeClass('selection');
-                selection = false;
-            }
-        }
+
+            select(time, rego);
+        });
     });
 
-    div.bind('add-booking', function(e, params) {
-        var min = moment(params.from_time),
-            max = moment(params.to_time),
-            bookingrange = moment.range(min, max);
-
-        if(rowrange.overlaps(bookingrange)) {
-            booking = params;
-
-            div.addClass('booked');
-
-            if(time.isSame(min)) {
-                div.find('.contents').html(existingBookingHeaderDiv(booking));
-            }
-        }
-    });
-
-    div.bind('del-booking', function(e, params) {
-        if(booking && booking.url === params) {
-            div.find('.contents').empty();
-            booking = null;
-            div.removeClass('booked');
-        }
-    });
-
-    div.click(function() {
-        if(booking) {
-            editBooking(booking);
-            return;
-        }
-
-        if(header) {
-            return;
-        }
-
-        select(time);
-    });
 
     return div;
 }
@@ -522,7 +553,6 @@ function getToday() {
 
 function render() {
     var today = getToday(),
-        aircraft = $('#for-ac').val(),
         start = today.clone().startOf('day'),
         end = start.clone().add(1, 'day'),
         daylight = getDaylightHours(today),
@@ -533,6 +563,10 @@ function render() {
     selectionStart = selectionEnd = null;
 
     listdiv.empty();
+
+    if(phone !== true) {
+        listdiv.append(headerLine());
+    }
 
     moment.range(start, end).by(step, function(time) {
         if(time.isBefore(dawn) || time.isAfter(dusk)) {
@@ -545,16 +579,31 @@ function render() {
     $.get(contextPath + '/booking/', { 
         from_time: start.format(), 
         to_time: end.format(), 
-        aircraft: aircraft 
     })
     .done(function(bookings) {
         for(var i=0;i<bookings.length;i++) {
-            $('.booking-line').trigger('add-booking', [bookings[i]]);
+            $('.booking-line .contents').trigger('add-booking', [bookings[i]]);
         }
     })
     .fail(function(e, err, params) {
         alert('oops: ' + err);
     });
+}
+
+function onResize() {
+    if($(window).width() < 768 && phone !== true) {
+        phone = true;
+        $('#for-ac').parents('.row').show();
+        render();
+        return;
+    } 
+    
+    if($(window).width() >= 768 && phone !== false) {
+        phone = false;
+        $('#for-ac').parents('.row').hide();
+        render();
+        return;
+    } 
 }
 
 function init() {
@@ -564,14 +613,17 @@ function init() {
         disableTouchKeyboard: true
     });
 
+    $(window).resize(onResize);
+    onResize();
+
     $('.today').change(function() {
         render();
     });
     
     $('#for-ac').change(function() {
-        render();
+        render(); // no need to re-query the server side, but.. meh.
     });
-    
+
     $('.prev-day').click(function() {
         var today = getToday();
         today.subtract(1, 'day');
@@ -614,7 +666,6 @@ $(document).ready(function() {
         aircraftsByRego = {};
         aircraftsByUrl = {};
 
-        $('#for-ac').empty();
         $('#add-form-content #aircraft').empty();
 
         for(var i = 0;i<acs.length;i++) {

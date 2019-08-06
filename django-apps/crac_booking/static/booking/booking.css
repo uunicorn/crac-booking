@@ -16,7 +16,39 @@
     top: 50%;
     left: 50%;
     margin: -8px 0 0 -8px;
+}
 
+.header-line {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 6em repeat(auto-fit, minmax(10em, 1fr));
+    border: 1px solid #ddd;
+    margin-bottom: -1px;
+}
+
+.header-contents {
+    font-weight: bold;
+    padding: 1.5em;
+    margin-right: -1px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    text-align: center;
+}
+
+.booking-line {
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 6em repeat(auto-fit, minmax(10em, 1fr));
+    border: 1px solid #ddd;
+    margin-bottom: -1px;
+}
+
+.contents {
+    padding: 1.5em;
+    margin-right: -1px;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    min-height: 3em;
 }
 
 .booked {
@@ -29,6 +61,7 @@
 
 .time {
     font-weight: bold;
+    margin: auto;
 }
 
 .col-centered {
