@@ -613,9 +613,6 @@ function init() {
         disableTouchKeyboard: true
     });
 
-    $(window).resize(onResize);
-    onResize();
-
     $('.today').change(function() {
         render();
     });
@@ -639,6 +636,9 @@ function init() {
     });
 
     $('.today').val(moment().format('DD/MM/YYYY'));
+
+    $(window).resize(onResize);
+    onResize();
 
     render();
     initBookingForm();

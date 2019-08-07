@@ -9,7 +9,7 @@
     <script src="{% static "booking/moment-range.min.js" %}"></script>
     <script src="{% static "booking/bootstrap-datepicker.min.js" %}"></script>
     <script src="{% static "booking/select2.min.js" %}"></script>
-    <script src="{% static "booking/booking.js" %}"></script>
+    <script src="{% static "booking/booking.js" %}?1"></script>
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
@@ -23,8 +23,8 @@
     <div class="loading"><img src="{% static "booking/images/loading.gif" %}" alt="loading..."></div>
 
     <div class="row">
-        <div class="col-xs-4"></div>
-        <div class="col-xs-4">
+        <div class="col-lg-4"></div>
+        <div class="col-lg-4">
             <div class="input-group date">
                <select id="for-ac" class="form-control"></select>
                 <div class="input-group-addon">
@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xs-4"></div>
+        <div class="col-lg-4"></div>
     </div>
     <div class="row">
 	<div class="col-xs-4"><div class="btn btn-default prev-day">Previous day</div></div>
