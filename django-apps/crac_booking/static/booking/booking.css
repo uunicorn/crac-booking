@@ -19,9 +19,9 @@
 }
 
 .header-line {
+    display: -ms-grid;
     display: grid;
     grid-gap: 10px;
-    grid-template-columns: 6em repeat(auto-fit, minmax(10em, 1fr));
     border: 1px solid #ddd;
     margin-bottom: -1px;
 }
@@ -36,9 +36,9 @@
 }
 
 .booking-line {
+    display: -ms-grid;
     display: grid;
     grid-gap: 10px;
-    grid-template-columns: 6em repeat(auto-fit, minmax(10em, 1fr));
     border: 1px solid #ddd;
     margin-bottom: -1px;
 }

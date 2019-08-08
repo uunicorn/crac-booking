@@ -27,6 +27,10 @@ function getDaylightHours(moment) {
 
 function timeDiv(time) {
     return $('<div/>')
+        .css({
+            '-ms-grid-row': '' + 1,
+            '-ms-grid-column': ''+ 1
+        })
         .addClass('time')
         .text(time.format('HH:mm'));
 }
@@ -412,18 +416,40 @@ function existingBookingHeaderDiv(booking) {
         );
 }
 
+function displayACs() {
+    if(phone === true) {
+        return [$('#for-ac').val()];
+    }
+
+    return Object.keys(aircraftsByRego);
+}
+
 function headerLine() {
-    var div = $('<div>')
+    var acs = displayACs(),
+        colsTemplate = '6em' + new Array(acs.length+1).join(' 1fr'),
+        div = $('<div>')
+            .css({
+                '-ms-grid-columns': colsTemplate,
+                'grid-template-columns': colsTemplate
+            })
             .addClass('header-line');
 
     $('<div>')
+        .css({
+            '-ms-grid-row': '' + 1,
+            '-ms-grid-column': ''+ 1
+        })
         .addClass('time')
         .text('Time')
         .appendTo(div);
 
-    $(Object.keys(aircraftsByRego)).each(function() {
+    $(acs).each(function(i) {
         var rego = '' + this,
             contents = $('<div>')
+                .css({
+                    '-ms-grid-row': '' + 1,
+                    '-ms-grid-column': ''+ (i+2)
+                })
                 .addClass('header-contents')
                 .text(rego)
                 .appendTo(div);
@@ -434,24 +460,30 @@ function headerLine() {
 
 function baseLine(time) {
     var rowrange = moment.range(time, time.clone().add(step)),
+        acs = displayACs(),
+        colsTemplate = '6em' + new Array(acs.length+1).join(' 1fr'),
         div = $('<div>')
+            .css({
+                '-ms-grid-columns': colsTemplate,
+                'grid-template-columns': colsTemplate
+            })
             .addClass('booking-line')
             .addClass('list-group-item-action')
             .append(timeDiv(time));
 
 
-    $(Object.keys(aircraftsByRego)).each(function() {
+    $(acs).each(function(i) {
         var rego = '' + this,
             booking,
             header = false, 
             selection = false,
             contents = $('<div>')
+                .css({
+                    '-ms-grid-row': '' + 1,
+                    '-ms-grid-column': ''+ (i+2)
+                })
                 .addClass('contents')
                 .addClass('contents-' + rego);
-
-        if(phone === true && rego !== $('#for-ac').val()) {
-            return;
-        }
 
         contents.appendTo(div);
 
