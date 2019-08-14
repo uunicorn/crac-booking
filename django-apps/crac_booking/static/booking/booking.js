@@ -407,7 +407,7 @@ function existingBookingHeaderDiv(booking) {
                         terminateFlight(booking);
                     }) 
                 : 
-                $('<div class="btn btn-default">Terminate the flight</div>')
+                $('<div class="btn btn-default">Enter Hobbs hours</div>')
                     .click(function(e) {
                         e.stopPropagation();
                         terminateFlight(booking);
