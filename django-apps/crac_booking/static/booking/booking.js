@@ -50,13 +50,14 @@ function editBooking(booking) {
     $('#add-form-content #hobs_end').val(booking.hobs_end);
     $('#add-form-content #details').val(booking.details);
     $('#add-form-content #aircraft').val(aircraftsByUrl[booking.aircraft].rego);
-    $('#add-form-content #iam_current').prop('checked', false);
 
     if(booking.url) {
         $('#add-form-content #submit').val('Save');
+        $('#add-form-content #iam-current').prop('checked', true);
         $('#add-form-content #delete').show();
     } else {
         $('#add-form-content #submit').val('Add');
+        $('#add-form-content #iam-current').prop('checked', false);
         $('#add-form-content #delete').hide();
     }
     $('#add-form-content').modal('show');
@@ -91,8 +92,9 @@ function cleanForm($node) {
     $node.find('.alerts').empty().hide();
 
     $node.find('.has-error')
-        .removeClass('has-error')
-        .find('input,textarea')
+        .removeClass('has-error');
+
+    $node.find('input,textarea')
         .tooltip('destroy');
 }
 
@@ -101,6 +103,14 @@ function initBookingForm() {
 
     // hack to allow select2 to work with bootstrap
     $.fn.modal.Constructor.prototype.enforceFocus = function () {};
+
+    $('.current_popover').popover({
+            html: 'true',
+            trigger: 'focus',
+            title: 'Are you Current?',
+            viewport: '#add-form-content .modal-dialog',
+            content: 'By ticking this checkbox you certify that you are a current pilot. It means you have <ul><li>current RAANZ membership</li><li>current CRAC membership</li><li>current medical certificate</li><li>current BFR</li></ul>'
+        });
 
     $('.member-select').select2({
         ajax: {
@@ -197,7 +207,7 @@ function initBookingForm() {
 
         var url = $('#add-form-content #url').val(),
             date = $('#add-form-content #date').val(),
-            current = $('#iam_current').is(':checked'),
+            current = $('#iam-current').is(':checked'),
             from = moment(date + ' ' + $('#add-form-content #from_time').val(), 'DD/MM/YYYY HH:mm'),
             to = moment(date + ' ' + $('#add-form-content #to_time').val(), 'DD/MM/YYYY HH:mm'),
             request = {
@@ -215,7 +225,7 @@ function initBookingForm() {
             };
 
         if(!current) {
-            var input = $('#iam_current');
+            var input = $('#iam-current');
             input.closest('.form-group').addClass('has-error');
             input.tooltip({trigger: 'focus', placement: 'top', title: 'You must be current to hire the aircraft'});
             input.focus();

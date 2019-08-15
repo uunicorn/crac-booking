@@ -13,7 +13,7 @@
 {% endaddtoblock %}
 
 {% addtoblock "css" %}
-    <link rel="stylesheet" href="{% static "booking/booking.css" %}?3"/>
+    <link rel="stylesheet" href="{% static "booking/booking.css" %}?4"/>
     <link rel="stylesheet" href="{% static "booking/bootstrap-datepicker.min.css" %}"/>
     <link rel="stylesheet" href="{% static "booking/select2.min.css" %}"/>
     <link rel="stylesheet" href="{% static "booking/select2-bootstrap.css" %}"/>
@@ -140,9 +140,11 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-lg-4 control-label" for="iam_current">I'm current</label>
+                            <label class="col-lg-4 control-label iam-current-label" for="iam-current">
+                                I'm <a href="#" class="current_popover">current</a>
+                            </label>
                             <div class="col-lg-8">
-                                <input type="checkbox" id="iam_current">
+                                <input type="checkbox" id="iam-current">
                             </div>
                         </div>
                         <div class="form-group">

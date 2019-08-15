@@ -73,6 +73,10 @@
     margin-left: 1em;
 }
 
+.iam-current-label .popover {
+    width: 20em;
+}
+
 /*
  * Bootstrap callouts
  */
