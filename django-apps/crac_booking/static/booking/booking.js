@@ -50,6 +50,7 @@ function editBooking(booking) {
     $('#add-form-content #hobs_end').val(booking.hobs_end);
     $('#add-form-content #details').val(booking.details);
     $('#add-form-content #aircraft').val(aircraftsByUrl[booking.aircraft].rego);
+    $('#add-form-content #iam_current').prop('checked', false);
 
     if(booking.url) {
         $('#add-form-content #submit').val('Save');
@@ -196,6 +197,7 @@ function initBookingForm() {
 
         var url = $('#add-form-content #url').val(),
             date = $('#add-form-content #date').val(),
+            current = $('#iam_current').is(':checked'),
             from = moment(date + ' ' + $('#add-form-content #from_time').val(), 'DD/MM/YYYY HH:mm'),
             to = moment(date + ' ' + $('#add-form-content #to_time').val(), 'DD/MM/YYYY HH:mm'),
             request = {
@@ -211,6 +213,14 @@ function initBookingForm() {
                 "hobs_end": $('#add-form-content #hobs_end').val() || null,
                 "aircraft": aircraftsByRego[$('#add-form-content #aircraft').val()].url
             };
+
+        if(!current) {
+            var input = $('#iam_current');
+            input.closest('.form-group').addClass('has-error');
+            input.tooltip({trigger: 'focus', placement: 'top', title: 'You must be current to hire the aircraft'});
+            input.focus();
+            return;
+        }
 
         $.ajax({
             url: url ? url : (contextPath + '/booking/'),
