@@ -77,6 +77,10 @@
     width: 20em;
 }
 
+.door-form .btn {
+    margin-top: 1em;
+}
+
 /*
  * Bootstrap callouts
  */
