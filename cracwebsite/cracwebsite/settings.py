@@ -35,14 +35,22 @@ INSTALLED_APPS = [
     'crac_booking.apps.CracBookingConfig',
     'rest_framework',
     'sekizai',
+    'menus',
+    'cms',
+    'easy_thumbnails',
+    'treebeard',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'light_gallery',
+    'django.contrib.sites',
 #    'djangocms_googlecalendar',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',

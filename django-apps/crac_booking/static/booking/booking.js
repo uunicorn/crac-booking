@@ -420,7 +420,7 @@ function existingBookingHeaderDiv(booking) {
                 $('<a href="#">')
                     .text('Hobbs: ' + booking.hobs_start 
                           + ' .. ' + booking.hobs_end
-                          + ' ($' + (135.0*(booking.hobs_end-booking.hobs_start)).toFixed(2)
+                          + ' ($' + (140.0*(booking.hobs_end-booking.hobs_start)).toFixed(2)
                           + ')')
                     .click(function(e) {
                         e.stopPropagation();
