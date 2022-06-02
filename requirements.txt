@@ -16,7 +16,7 @@ django-select2==6.3.1
 django-treebeard==4.3
 djangorestframework==3.4.6
 easy-thumbnails==2.5
-html5lib==0.9999999
+html5lib==0.99999999
 jsonfield==1.0.3
 Pillow==5.2.0
 python-dateutil==2.5.3
