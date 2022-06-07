@@ -555,9 +555,10 @@ function baseLine(time) {
         contents.bind('add-booking', function(e, params) {
             var min = moment(params.from_time),
                 max = moment(params.to_time),
-                bookingrange = moment.range(min, max);
+                bookingrange = moment.range(min, max),
+		ac = aircraftsByUrl[params.aircraft]; // can be null if A/C is not ACTIVE
 
-            if(rowrange.overlaps(bookingrange) && aircraftsByUrl[params.aircraft].rego === rego) {
+            if(rowrange.overlaps(bookingrange) && ac && ac.rego === rego) {
                 booking = params;
 
                 contents.addClass('booked');
