@@ -180,6 +180,10 @@ function initBookingForm() {
             if(!$('#contact_phone').val() && data.cell_phone) {
                 $('#contact_phone').val(data.cell_phone);
             }
+
+            if(!$('#contact_phone').val() && data.home_phone) {
+                $('#contact_phone').val(data.home_phone);
+            }
         }
     });
 
